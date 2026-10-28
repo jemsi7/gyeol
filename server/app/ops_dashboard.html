@@ -1,0 +1,1914 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>작업 운영 현황</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: oklch(97.5% 0.008 85);
+      --surface: oklch(99.2% 0.005 85);
+      --surface-muted: oklch(94.8% 0.011 82);
+      --ink: oklch(24% 0.018 205);
+      --ink-muted: oklch(49% 0.018 205);
+      --line: oklch(87% 0.014 82);
+      --line-strong: oklch(75% 0.018 82);
+      --accent: oklch(47% 0.09 193);
+      --accent-soft: oklch(91% 0.035 193);
+      --success: oklch(49% 0.105 151);
+      --warning: oklch(65% 0.13 75);
+      --danger: oklch(52% 0.14 28);
+      --danger-soft: oklch(94% 0.035 28);
+      --focus: oklch(58% 0.13 236);
+      --shadow: 0 18px 50px oklch(34% 0.025 205 / 0.08);
+      --radius: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--canvas);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+
+    :focus-visible {
+      outline: 3px solid color-mix(in oklch, var(--focus) 65%, transparent);
+      outline-offset: 3px;
+    }
+
+    [hidden] { display: none !important; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .masthead {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 14px clamp(18px, 3vw, 48px);
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in oklch, var(--canvas) 92%, var(--surface));
+    }
+
+    .identity, .masthead-actions, .connection, .section-heading, .queue-toolbar,
+    .filter-tabs, .worker-title, .metric-value, .access-form, .refresh-state {
+      display: flex;
+      align-items: center;
+    }
+
+    .identity { gap: 12px; }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--ink);
+      color: var(--surface);
+      font-weight: 750;
+      letter-spacing: -0.04em;
+    }
+
+    .product-name { font-weight: 720; letter-spacing: -0.025em; }
+    .product-context { color: var(--ink-muted); font-size: 12px; }
+    .masthead-actions { gap: 12px; }
+    .connection { gap: 7px; color: var(--ink-muted); font-size: 13px; }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--line-strong);
+    }
+
+    .status-dot[data-state="live"] { background: var(--success); }
+    .status-dot[data-state="loading"] { background: var(--warning); }
+    .status-dot[data-state="stale"] { background: var(--danger); }
+
+    .button {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--surface);
+      cursor: pointer;
+      transition: background-color 180ms cubic-bezier(.22, 1, .36, 1),
+                  border-color 180ms cubic-bezier(.22, 1, .36, 1),
+                  transform 180ms cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .button:hover { background: var(--surface-muted); border-color: var(--ink-muted); }
+    .button:active { transform: translateY(1px); }
+    .button:disabled { cursor: wait; opacity: 0.55; }
+    .button-primary { border-color: var(--accent); background: var(--accent); color: var(--surface); }
+    .button-primary:hover { background: oklch(42% 0.09 193); border-color: oklch(42% 0.09 193); }
+    .button-quiet { background: transparent; border-color: transparent; color: var(--ink-muted); }
+
+    .shell {
+      width: min(1500px, 100%);
+      margin: 0 auto;
+      padding: 32px clamp(18px, 3vw, 48px) 64px;
+    }
+
+    .access-panel {
+      min-height: calc(100vh - 165px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 460px);
+      align-items: center;
+      gap: clamp(44px, 8vw, 120px);
+    }
+
+    .access-copy { max-width: 610px; }
+    .eyebrow { color: var(--accent); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 18px; font-size: clamp(34px, 5vw, 60px); line-height: 1.04; letter-spacing: -0.055em; }
+    h2 { margin-bottom: 0; font-size: 20px; line-height: 1.25; letter-spacing: -0.025em; }
+    h3 { margin-bottom: 5px; font-size: 15px; letter-spacing: -0.015em; }
+    .access-copy p { max-width: 62ch; color: var(--ink-muted); font-size: 17px; }
+
+    .access-form {
+      align-items: stretch;
+      flex-direction: column;
+      gap: 12px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    #budget-form { margin-top: 18px; padding: 20px; gap: 8px; }
+    #budget-form .button { margin-top: 6px; }
+    .budget-domain-shell { margin-top: 18px; }
+    .budget-domain-table { min-width: 860px; }
+    .budget-domain-table .field { min-width: 88px; min-height: 38px; padding: 6px 8px; }
+    .budget-domain-table .field[readonly] { border-style: dashed; color: var(--ink-muted); }
+    .budget-domain-name { font-weight: 720; }
+    .budget-domain-code { display: block; margin-top: 2px; color: var(--ink-muted); font-size: 11px; }
+
+    label { font-weight: 680; }
+    .field-hint { margin: -4px 0 5px; color: var(--ink-muted); font-size: 13px; }
+    .field {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--canvas);
+      color: var(--ink);
+    }
+
+    .field:hover { border-color: var(--ink-muted); }
+    .form-error { min-height: 22px; margin: 0; color: var(--danger); font-size: 13px; }
+
+    .dashboard { display: grid; gap: 34px; }
+    .summary-strip { display: grid; grid-template-columns: repeat(5, 1fr); border-block: 1px solid var(--line); }
+    .summary-item { min-width: 0; padding: 20px 22px 20px 0; }
+    .summary-item + .summary-item { padding-left: 22px; border-left: 1px solid var(--line); }
+    .summary-item dt { color: var(--ink-muted); font-size: 12px; font-weight: 650; }
+    .summary-item dd { margin: 8px 0 0; font-size: 28px; font-weight: 740; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+    .summary-item dd small { margin-left: 6px; color: var(--ink-muted); font-size: 13px; font-weight: 540; letter-spacing: 0; }
+
+    .section { min-width: 0; }
+    .section-heading { justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+    .section-note { color: var(--ink-muted); font-size: 13px; }
+
+    .push-panel {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .article-embedding-panel .bar-track { height: 12px; }
+    .article-embedding-panel .bar-label strong { display: inline-flex; gap: 5px; }
+
+    .push-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0;
+    }
+
+    .push-metric {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--canvas);
+    }
+
+    .push-metric dt, .push-detail dt { color: var(--ink-muted); font-size: 12px; font-weight: 650; }
+    .push-metric dd { margin: 7px 0 0; font-size: 30px; font-weight: 750; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+    .push-metric[data-tone="success"] dd { color: var(--success); }
+    .push-metric[data-tone="retry"] dd { color: oklch(50% 0.12 65); }
+    .push-metric[data-tone="failure"] dd { color: var(--danger); }
+
+    .push-details {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px 18px;
+      margin: 18px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .push-detail { min-width: 0; }
+    .push-detail dd { margin: 4px 0 0; overflow: hidden; font-size: 13px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+
+    .worker-list { border-top: 1px solid var(--line-strong); }
+    .worker-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.8fr) minmax(220px, 1.5fr) minmax(220px, 1.5fr);
+      align-items: center;
+      gap: clamp(20px, 3vw, 48px);
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .worker-title { gap: 10px; }
+    .worker-glyph { width: 10px; height: 10px; border-radius: 3px; background: var(--accent); }
+    .worker-slots { color: var(--ink-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .bar-group { min-width: 0; }
+    .bar-label { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 8px; color: var(--ink-muted); font-size: 12px; }
+    .bar-label strong { color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .bar-track { height: 8px; overflow: hidden; border-radius: 99px; background: var(--surface-muted); }
+    .bar-fill { height: 100%; width: 0; border-radius: inherit; background: var(--accent); transition: width 220ms cubic-bezier(.22, 1, .36, 1); }
+    .bar-fill.history { background: color-mix(in oklch, var(--accent) 55%, var(--ink-muted)); }
+
+    .queue-toolbar { justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 12px; }
+    .filter-tabs { flex-wrap: wrap; gap: 4px; }
+    .filter-tab {
+      min-height: 36px;
+      padding: 7px 11px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+
+    .filter-tab:hover { background: var(--surface-muted); color: var(--ink); }
+    .filter-tab[aria-selected="true"] { background: var(--ink); color: var(--surface); }
+    .limit-control { display: grid; grid-template-columns: auto 78px; align-items: center; gap: 9px; color: var(--ink-muted); font-size: 13px; }
+    .limit-control .field { min-height: 36px; padding: 5px 8px; }
+
+    .table-shell { overflow-x: auto; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line); background: var(--surface); }
+    table { width: 100%; min-width: 980px; border-collapse: collapse; font-size: 13px; }
+    th { padding: 11px 12px; border-bottom: 1px solid var(--line); color: var(--ink-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.035em; text-align: left; text-transform: uppercase; }
+    td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: color-mix(in oklch, var(--accent-soft) 35%, var(--surface)); }
+    .article-cell { max-width: 330px; }
+    .article-title { display: block; overflow: hidden; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .article-meta { display: block; margin-top: 4px; color: var(--ink-muted); font-size: 11px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+    .numeric { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .error-cell { max-width: 300px; }
+    .error-text { display: -webkit-box; overflow: hidden; color: var(--ink-muted); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+
+    .badge { display: inline-flex; align-items: center; min-height: 24px; padding: 3px 8px; border-radius: 7px; background: var(--surface-muted); color: var(--ink-muted); font-size: 11px; font-weight: 720; }
+    .badge[data-status="processing"] { background: var(--accent-soft); color: var(--accent); }
+    .badge[data-status="queued"] { background: oklch(94% 0.038 75); color: oklch(46% 0.1 65); }
+    .badge[data-status="done"] { background: oklch(94% 0.035 151); color: var(--success); }
+    .badge[data-status="dead"] { background: var(--danger-soft); color: var(--danger); }
+
+    .empty-row { padding: 40px 18px; color: var(--ink-muted); text-align: center; }
+    .run-list { display: grid; border-top: 1px solid var(--line-strong); }
+    .run-row { display: grid; grid-template-columns: minmax(160px, 1fr) auto auto minmax(135px, auto); gap: 24px; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--line); }
+    .run-query { overflow: hidden; color: var(--ink-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .run-counts { color: var(--ink-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+    .skeleton { position: relative; overflow: hidden; min-height: 18px; border-radius: 6px; background: var(--surface-muted); }
+    .skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, oklch(99% 0.004 85 / .7), transparent); transform: translateX(-100%); animation: skeleton 1.3s infinite; }
+    @keyframes skeleton { to { transform: translateX(100%); } }
+
+    .alert { padding: 12px 14px; border: 1px solid color-mix(in oklch, var(--danger) 32%, var(--line)); border-radius: 10px; background: var(--danger-soft); color: var(--danger); font-size: 13px; }
+    .refresh-state { gap: 8px; }
+
+    .view-nav {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface-muted);
+      scrollbar-width: thin;
+    }
+
+    .view-tab {
+      min-width: max-content;
+      flex: 1;
+      min-height: 42px;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+      font-weight: 680;
+    }
+
+    .view-tab:hover { color: var(--ink); }
+    .view-tab[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 4px oklch(34% 0.025 205 / .1); }
+    .view-panel { min-width: 0; }
+    .view-panel-stack { display: grid; gap: 34px; }
+    .analytics-strip dd[data-unavailable="true"] { color: var(--ink-muted); }
+
+    .overview-grid, .analytics-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .insight-card, .chart-panel {
+      min-width: 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .insight-card dt { color: var(--ink-muted); font-size: 12px; font-weight: 680; }
+    .insight-card dd { margin: 9px 0 0; font-size: 24px; font-weight: 740; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+    .insight-card p { margin: 8px 0 0; color: var(--ink-muted); font-size: 13px; }
+
+    .analytics-toolbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .control-group { display: flex; flex-wrap: wrap; gap: 5px; }
+    .control-button {
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink-muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .control-button:hover { border-color: var(--line-strong); color: var(--ink); }
+    .control-button[aria-pressed="true"], .control-button[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); }
+
+    .chart-copy { max-width: 66ch; margin-bottom: 18px; }
+    .chart-copy h2 { margin-bottom: 5px; }
+    .chart-copy p { margin: 0; color: var(--ink-muted); font-size: 13px; }
+    .chart-shell { position: relative; min-height: 390px; overflow: hidden; }
+    .chart-shell svg { display: block; width: 100%; min-width: 0; height: 390px; }
+    .chart-empty { min-height: 360px; display: grid; place-items: center; padding: 28px; color: var(--ink-muted); text-align: center; }
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; color: var(--ink-muted); font-size: 12px; }
+    .legend-key { display: inline-flex; align-items: center; gap: 7px; }
+    .legend-swatch { width: 18px; height: 8px; border-radius: 2px; background: var(--accent); }
+    .legend-swatch.line { height: 2px; background: var(--ink); }
+    .legend-swatch.partial { width: 9px; height: 9px; border: 2px solid var(--accent); border-radius: 50%; background: var(--surface); }
+
+    .coverage-note { margin: 12px 0 0; color: var(--ink-muted); font-size: 12px; }
+    .coverage-note strong { color: var(--ink); }
+    .analytics-error { margin-bottom: 16px; }
+
+    .popular-table { min-width: 1080px; }
+    .popular-table th:first-child, .popular-table td:first-child { width: 64px; text-align: right; }
+    .popular-table th:last-child, .popular-table td:last-child { width: 130px; text-align: right; }
+    .popular-title { max-width: 560px; font-weight: 680; }
+    .popular-domain { margin-top: 3px; color: var(--ink-muted); font-size: 11px; }
+    .table-pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+    .table-pager output { min-width: 88px; color: var(--ink-muted); font-size: 13px; text-align: center; }
+
+    @media (max-width: 1200px) {
+      .summary-strip { grid-template-columns: repeat(3, 1fr); }
+      .summary-item:nth-child(4) { padding-left: 0; border-left: 0; }
+      .summary-item:nth-child(n + 4) { border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 900px) {
+      .access-panel { grid-template-columns: 1fr; align-content: center; }
+      .access-copy { padding-top: 28px; }
+      .summary-strip { grid-template-columns: repeat(2, 1fr); }
+      .summary-item { padding-left: 22px; border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+      .summary-item:nth-child(-n + 2) { border-top: 0; }
+      .summary-item:nth-child(odd) { padding-left: 0; border-left: 0; }
+      .summary-item:nth-child(even) { padding-left: 22px; border-left: 1px solid var(--line); }
+      .push-details { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .worker-row { grid-template-columns: minmax(140px, .7fr) 1fr; gap: 16px 24px; }
+      .worker-row .bar-group:last-child { grid-column: 2; }
+      .run-row { grid-template-columns: 1fr auto; gap: 8px 18px; }
+      .run-query { grid-column: 1; }
+      .overview-grid, .analytics-metrics { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .masthead { align-items: flex-start; }
+      .masthead-actions { align-items: flex-end; flex-direction: column; gap: 5px; }
+      .connection span:last-child { display: none; }
+      .shell { padding-top: 24px; }
+      .access-panel { min-height: calc(100vh - 140px); gap: 30px; }
+      h1 { font-size: 38px; }
+      .access-form { padding: 20px; }
+      .summary-strip { grid-template-columns: 1fr; }
+      .summary-item, .summary-item + .summary-item {
+        padding: 16px 0;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+      .summary-item:first-child { border-top: 0; }
+      .summary-item dd { font-size: 24px; }
+      .push-panel { padding: 17px; }
+      .push-metrics { grid-template-columns: 1fr; }
+      .push-metric { padding: 15px; }
+      .push-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .worker-row { grid-template-columns: 1fr; gap: 14px; }
+      .worker-row .bar-group:last-child { grid-column: 1; }
+      .queue-toolbar { align-items: stretch; flex-direction: column; }
+      .limit-control { align-self: flex-end; }
+      .section-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .analytics-toolbar { align-items: stretch; flex-direction: column; }
+      .overview-grid, .analytics-metrics { grid-template-columns: 1fr; }
+      .chart-panel, .insight-card { padding: 17px; }
+      .chart-shell, .chart-empty { min-height: 320px; }
+      .chart-shell svg { height: 320px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="masthead">
+    <div class="identity">
+      <span class="brand-mark" aria-hidden="true">결</span>
+      <div>
+        <div class="product-name">운영 대시보드</div>
+        <div class="product-context">회원 · 활동 · 콘텐츠 · 시스템</div>
+      </div>
+    </div>
+    <div class="masthead-actions">
+      <div class="connection" aria-live="polite">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="connection-label">연결 전</span>
+      </div>
+      <button class="button button-quiet" id="disconnect-button" type="button" hidden>연결 해제</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="access-panel" id="access-panel" aria-labelledby="access-title">
+      <div class="access-copy">
+        <p class="eyebrow">Operations</p>
+        <h1 id="access-title">서비스의 움직임을 한눈에.</h1>
+        <p>회원 성장, 로그인 활성도, 기사 소비와 시스템 처리 상태를 목적별 뷰에서 확인합니다.</p>
+      </div>
+      <form class="access-form" id="token-form">
+        <label for="token-input">운영 API token</label>
+        <p class="field-hint">token은 이 탭이 열려 있는 동안에만 보관됩니다.</p>
+        <input class="field" id="token-input" name="token" type="password" autocomplete="current-password" required>
+        <p class="form-error" id="token-error" role="alert"></p>
+        <button class="button button-primary" id="connect-button" type="submit">현황 연결</button>
+      </form>
+    </section>
+
+    <div class="dashboard" id="dashboard" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Operations</p>
+          <h1 style="font-size:32px;margin-bottom:0">서비스 운영</h1>
+        </div>
+        <div class="refresh-state">
+          <span class="section-note" id="last-updated">불러오는 중</span>
+          <button class="button" id="refresh-button" type="button">새로고침</button>
+        </div>
+      </div>
+
+      <div class="alert" id="stale-alert" role="status" hidden></div>
+
+      <div class="alert analytics-error" id="analytics-error" role="status" hidden></div>
+
+      <dl class="summary-strip analytics-strip" aria-label="서비스 핵심 지표">
+        <div class="summary-item"><dt>전체 사용자</dt><dd id="analytics-total-members" data-unavailable="true">—</dd></div>
+        <div class="summary-item"><dt>오늘 DAU</dt><dd id="analytics-today-dau" data-unavailable="true">—</dd></div>
+        <div class="summary-item"><dt>이번 달 MAU</dt><dd id="analytics-current-mau" data-unavailable="true">—</dd></div>
+        <div class="summary-item"><dt>DAU / MAU</dt><dd id="analytics-stickiness" data-unavailable="true">—</dd></div>
+        <div class="summary-item"><dt>기사 누적 조회</dt><dd id="analytics-total-views" data-unavailable="true">—</dd></div>
+      </dl>
+
+      <nav class="view-nav" role="tablist" aria-label="운영 대시보드 보기">
+        <button class="view-tab" id="tab-overview" type="button" role="tab" data-view="overview" aria-controls="panel-overview" aria-selected="true" tabindex="0">개요</button>
+        <button class="view-tab" id="tab-users" type="button" role="tab" data-view="users" aria-controls="panel-users" aria-selected="false" tabindex="-1">사용자</button>
+        <button class="view-tab" id="tab-activity" type="button" role="tab" data-view="activity" aria-controls="panel-activity" aria-selected="false" tabindex="-1">활동</button>
+        <button class="view-tab" id="tab-content" type="button" role="tab" data-view="content" aria-controls="panel-content" aria-selected="false" tabindex="-1">콘텐츠</button>
+        <button class="view-tab" id="tab-system" type="button" role="tab" data-view="system" aria-controls="panel-system" aria-selected="false" tabindex="-1">시스템</button>
+      </nav>
+
+      <section class="view-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+        <div class="overview-grid">
+          <dl class="insight-card">
+            <dt>활성 회원 1인당 활동</dt>
+            <dd id="overview-events-per-member">—</dd>
+            <p id="overview-activity-period">집계 시작을 기다리는 중입니다.</p>
+          </dl>
+          <dl class="insight-card">
+            <dt>로그인 활성 집계 범위</dt>
+            <dd id="analytics-coverage">—</dd>
+            <p>DAU·MAU는 유효한 로그인 세션 갱신을 한국시간 날짜로 중복 제거합니다.</p>
+          </dl>
+          <dl class="insight-card">
+            <dt>분석 갱신</dt>
+            <dd id="analytics-updated">불러오는 중</dd>
+            <p>현재 보존된 회원·기사만 집계하며 도입 전 세션 활동은 추정하지 않습니다.</p>
+          </dl>
+        </div>
+      </section>
+
+      <section class="view-panel" id="panel-users" role="tabpanel" aria-labelledby="tab-users" tabindex="0" hidden>
+        <div class="chart-panel">
+          <div class="analytics-toolbar">
+            <div class="chart-copy">
+              <p class="eyebrow">Members</p>
+              <h2>사용자 추이</h2>
+              <p>한국시간 날짜별 신규 회원과 현재 보존 회원의 누적 규모입니다.</p>
+            </div>
+            <div class="control-group" aria-label="사용자 추이 기간">
+              <button class="control-button" type="button" data-days="30" aria-pressed="false">30일</button>
+              <button class="control-button" type="button" data-days="90" aria-pressed="true">90일</button>
+              <button class="control-button" type="button" data-days="365" aria-pressed="false">365일</button>
+            </div>
+          </div>
+          <div class="chart-shell" id="user-trend-chart" aria-live="polite"></div>
+          <div class="chart-legend" aria-label="사용자 추이 범례">
+            <span class="legend-key"><span class="legend-swatch"></span>신규 회원</span>
+            <span class="legend-key"><span class="legend-swatch line"></span>누적 회원</span>
+          </div>
+          <p class="coverage-note">계정 삭제 시 과거 누적에서도 제외됩니다.</p>
+        </div>
+      </section>
+
+      <section class="view-panel" id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" tabindex="0" hidden>
+        <div class="analytics-metrics" aria-label="활동 요약">
+          <dl class="insight-card"><dt>기간 활성 회원</dt><dd id="activity-active-members">—</dd><p>세션 갱신 고유 회원</p></dl>
+          <dl class="insight-card"><dt>기간 전체 활동</dt><dd id="activity-total-events">—</dd><p>검색·열기·장면·완독</p></dl>
+          <dl class="insight-card"><dt>활성 회원 1인당</dt><dd id="activity-events-per-member">—</dd><p>같은 coverage 기간 기준</p></dl>
+        </div>
+        <div class="chart-panel" style="margin-top:14px">
+          <div class="analytics-toolbar">
+            <div class="chart-copy">
+              <p class="eyebrow">Engagement</p>
+              <h2 id="activity-chart-title">DAU 추이</h2>
+              <p id="activity-chart-subtitle">로그인 세션을 갱신한 일별 고유 회원입니다.</p>
+            </div>
+            <div>
+              <div class="control-group" role="tablist" aria-label="활동 차트 보기">
+                <button class="control-button" type="button" role="tab" data-activity-view="dau" aria-selected="true">DAU</button>
+                <button class="control-button" type="button" role="tab" data-activity-view="mau" aria-selected="false">MAU</button>
+                <button class="control-button" type="button" role="tab" data-activity-view="mix" aria-selected="false">활동 구성</button>
+              </div>
+              <div class="control-group" id="monthly-controls" aria-label="MAU 기간" hidden style="margin-top:7px">
+                <button class="control-button" type="button" data-months="6" aria-pressed="false">6개월</button>
+                <button class="control-button" type="button" data-months="12" aria-pressed="true">12개월</button>
+              </div>
+            </div>
+          </div>
+          <div class="chart-shell" id="activity-chart" aria-live="polite"></div>
+          <div class="chart-legend" id="activity-legend"></div>
+          <p class="coverage-note" id="activity-coverage-note">세션 활동 집계 시작일 이후만 표시합니다.</p>
+        </div>
+      </section>
+
+      <section class="view-panel" id="panel-content" role="tabpanel" aria-labelledby="tab-content" tabindex="0" hidden>
+        <div class="chart-panel">
+          <div class="analytics-toolbar">
+            <div class="chart-copy">
+              <p class="eyebrow">Content</p>
+              <h2 id="content-ranking-title">인기 기사 Top 100</h2>
+              <p id="content-ranking-note">현재 공개·읽기 가능한 기사 · 전체 기간 누적 조회수</p>
+            </div>
+            <div class="control-group" role="tablist" aria-label="콘텐츠 기사 순위 보기">
+              <button class="control-button" type="button" role="tab" data-content-ranking="popular" aria-selected="true">인기</button>
+              <button class="control-button" type="button" role="tab" data-content-ranking="high" aria-selected="false">조회·노출 높음</button>
+              <button class="control-button" type="button" role="tab" data-content-ranking="low" aria-selected="false">조회·노출 낮음</button>
+            </div>
+          </div>
+          <div class="table-shell" tabindex="0" aria-label="기사 성과 순위 표, 좌우로 스크롤 가능">
+            <table class="popular-table">
+              <thead><tr><th>순위</th><th>기사</th><th>발행</th><th>조회수</th><th>피드 노출</th><th>조회/노출</th><th>집계 시작</th></tr></thead>
+              <tbody id="popular-articles-body"><tr><td colspan="7" class="empty-row">기사 순위를 불러오는 중입니다.</td></tr></tbody>
+            </table>
+          </div>
+          <div class="table-pager">
+            <button class="button" id="popular-prev" type="button" disabled>이전</button>
+            <output id="popular-page" aria-live="polite">1 / 1</output>
+            <button class="button" id="popular-next" type="button" disabled>다음</button>
+          </div>
+          <p class="coverage-note" id="content-ranking-caveat">조회/노출 순위는 최소 노출 5회 기사만 대상으로 첫 노출 이후 조회를 나눈 집계 프록시입니다. 개별 클릭률이 아닙니다. 딥링크·반복 조회로 100%를 넘을 수 있습니다.</p>
+        </div>
+      </section>
+
+      <section class="view-panel view-panel-stack" id="panel-system" role="tabpanel" aria-labelledby="tab-system" tabindex="0" hidden>
+
+      <dl class="summary-strip" aria-label="운영 요약">
+        <div class="summary-item"><dt>이용 가능 기사</dt><dd id="metric-available">0<small>건</small></dd></div>
+        <div class="summary-item"><dt>지금 처리 가능</dt><dd id="metric-due">0<small>건</small></dd></div>
+        <div class="summary-item"><dt>처리 중</dt><dd id="metric-processing">0<small>건</small></dd></div>
+        <div class="summary-item"><dt>최종 실패</dt><dd id="metric-dead">0<small>건</small></dd></div>
+        <div class="summary-item"><dt>가동 슬롯</dt><dd id="metric-workers">0 / 0</dd></div>
+      </dl>
+
+      <section class="section push-panel article-embedding-panel" aria-labelledby="article-embedding-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Article embeddings</p>
+            <h2 id="article-embedding-title">기사 텍스트 임베딩</h2>
+          </div>
+          <span class="section-note" id="article-embedding-updated">마지막 기록 —</span>
+        </div>
+        <div class="bar-group">
+          <div class="bar-label">
+            <span>임베딩 완료 / 대상 기사</span>
+            <strong><span id="article-embedding-count">— / —건</span><span aria-hidden="true">·</span><span id="article-embedding-percent">집계 전</span></strong>
+          </div>
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              id="article-embedding-progress"
+              role="progressbar"
+              aria-label="전체 대상 기사 중 임베딩 완료 비율"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuetext="집계 전"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section push-panel" aria-labelledby="timeline-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Explore timelines</p>
+            <h2 id="timeline-title">타임라인 생성 현황</h2>
+          </div>
+          <span class="badge" id="timeline-worker-state" data-status="queued">상태 확인 중</span>
+        </div>
+        <dl class="push-metrics" aria-label="타임라인 총계">
+          <div class="push-metric" data-tone="success"><dt>총 타임라인</dt><dd id="timeline-total">0</dd></div>
+          <div class="push-metric" data-tone="retry"><dt>발행판 누적</dt><dd id="timeline-editions">0</dd></div>
+          <div class="push-metric" data-tone="failure"><dt>실패한 회차</dt><dd id="timeline-failed">0</dd></div>
+        </dl>
+        <dl class="push-details" aria-label="타임라인 워커와 현재 발행판 상세">
+          <div class="push-detail"><dt>현재 발행판</dt><dd id="timeline-current">—</dd></div>
+          <div class="push-detail"><dt>노출 / 발행 타임라인</dt><dd id="timeline-readable">— / —</dd></div>
+          <div class="push-detail"><dt>발행 시각</dt><dd id="timeline-generated">—</dd></div>
+          <div class="push-detail"><dt>유효 기한</dt><dd id="timeline-valid-until">—</dd></div>
+          <div class="push-detail"><dt>총 노드</dt><dd id="timeline-nodes">0개</dd></div>
+          <div class="push-detail"><dt>구독</dt><dd id="timeline-subscriptions">0건</dd></div>
+          <div class="push-detail"><dt>마지막 워커 실행</dt><dd id="timeline-last-run">—</dd></div>
+          <div class="push-detail"><dt>마지막 실행 결과</dt><dd id="timeline-last-kind">—</dd></div>
+          <div class="push-detail"><dt>후보 pool</dt><dd id="timeline-pool">—</dd></div>
+          <div class="push-detail"><dt>군집 snapshot</dt><dd id="timeline-cluster">—</dd></div>
+        </dl>
+        <div class="table-shell" tabindex="0" aria-label="현재 발행판 타임라인 표, 좌우로 스크롤 가능">
+          <table>
+            <thead><tr><th>순위</th><th>제목</th><th>기간</th><th>노드</th><th>main / 날짜</th><th>매체</th></tr></thead>
+            <tbody id="timeline-list-body">
+              <tr><td colspan="6">불러오는 중…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-shell" tabindex="0" aria-label="최근 타임라인 회차 표, 좌우로 스크롤 가능">
+          <table>
+            <thead><tr><th>회차 slot</th><th>상태</th><th>타임라인</th><th>후보</th><th>시도</th><th>오류</th><th>기록</th></tr></thead>
+            <tbody id="timeline-runs-body">
+              <tr><td colspan="7">불러오는 중…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="access-form" id="timeline-refresh-form">
+          <p class="section-note">
+            군집은 6시간, 발행은 4시간 slot마다 자동으로 돌아갑니다. 아래 버튼은 그 slot을
+            기다리지 않고 지금 한 번 다시 만드는 개발·운영용 수동 트리거이며,
+            저장된 회차를 지우지 않고 새 slot으로 발행합니다. rerank 1회와 copy 1회 비용이 듭니다.
+          </p>
+          <p class="form-error" id="timeline-refresh-error" role="alert"></p>
+          <button class="button" id="timeline-refresh-button" type="submit">지금 타임라인 다시 생성</button>
+        </form>
+      </section>
+
+      <section class="section push-panel" aria-labelledby="budget-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Map budget</p>
+            <h2 id="budget-title">하루 Map 변환 예산</h2>
+          </div>
+          <span class="badge" id="budget-state" data-status="queued">상태 확인 중</span>
+        </div>
+        <dl class="push-metrics" aria-label="오늘 Map 예산 소비">
+          <div class="push-metric" data-tone="success"><dt>오늘 사용</dt><dd id="budget-used">0</dd></div>
+          <div class="push-metric" data-tone="retry"><dt>신규 (잔량/몫)</dt><dd id="budget-fresh">0 / 0</dd></div>
+          <div class="push-metric" data-tone="retry"><dt>과거 (잔량/몫)</dt><dd id="budget-backlog">0 / 0</dd></div>
+        </dl>
+        <dl class="push-details" aria-label="Map 예산 상세">
+          <div class="push-detail"><dt>현재 회차</dt><dd id="budget-current-run">—</dd></div>
+          <div class="push-detail"><dt>현재까지 허용</dt><dd id="budget-current-allowance">0건</dd></div>
+          <div class="push-detail"><dt>지금 추가 가능</dt><dd id="budget-current-remaining">0건</dd></div>
+          <div class="push-detail"><dt>다음 회차</dt><dd id="budget-next-run">—</dd></div>
+          <div class="push-detail"><dt>채점 완료 / 대기</dt><dd id="budget-triage">0 / 0</dd></div>
+          <div class="push-detail"><dt>채점 모드</dt><dd id="budget-mode">—</dd></div>
+          <div class="push-detail"><dt>후보 보관</dt><dd id="budget-ttl">—</dd></div>
+          <div class="push-detail"><dt>마지막 변경</dt><dd id="budget-updated">—</dd></div>
+        </dl>
+        <div class="table-shell budget-domain-shell" id="budget-domain-panel" hidden>
+          <table class="budget-domain-table" aria-label="도메인별 Map 예산과 격리 상태">
+            <thead>
+              <tr><th>도메인</th><th>총 한도</th><th>문서 한도</th><th>기사 사용 / 잔량</th><th>문서 사용 / 잔량</th><th>held / 격리</th><th>독자 게이트</th></tr>
+            </thead>
+            <tbody>
+              <tr data-budget-domain="core">
+                <td><span class="budget-domain-name">AI·기술</span><span class="budget-domain-code">core</span></td>
+                <td><label class="sr-only" for="budget-domain-core-limit">core 총 한도</label><input class="field" id="budget-domain-core-limit" type="number" min="0" max="1000" step="1"></td>
+                <td><label class="sr-only" for="budget-domain-core-document">core 문서 한도</label><input class="field" id="budget-domain-core-document" type="number" min="0" max="0" step="1" value="0" readonly></td>
+                <td class="numeric" id="budget-domain-core-article">0 / 0</td>
+                <td class="numeric" id="budget-domain-core-document-status">0 / 0</td>
+                <td class="numeric" id="budget-domain-core-held">0 / 0</td>
+                <td><span class="badge" id="budget-domain-core-reader" data-status="queued">확인 중</span></td>
+              </tr>
+              <tr data-budget-domain="crypto">
+                <td><span class="budget-domain-name">블록체인·크립토</span><span class="budget-domain-code">crypto</span></td>
+                <td><label class="sr-only" for="budget-domain-crypto-limit">crypto 총 한도</label><input class="field" id="budget-domain-crypto-limit" type="number" min="0" max="1000" step="1"></td>
+                <td><label class="sr-only" for="budget-domain-crypto-document">crypto 문서 한도</label><input class="field" id="budget-domain-crypto-document" type="number" min="0" max="1000" step="1"></td>
+                <td class="numeric" id="budget-domain-crypto-article">0 / 0</td>
+                <td class="numeric" id="budget-domain-crypto-document-status">0 / 0</td>
+                <td class="numeric" id="budget-domain-crypto-held">0 / 0</td>
+                <td><span class="badge" id="budget-domain-crypto-reader" data-status="queued">확인 중</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="access-form" id="budget-form">
+          <label class="field-label" for="budget-limit-input">하루 최대 변환 건수 (0이면 Map 정지)</label>
+          <input class="field" id="budget-limit-input" name="daily_map_limit" type="number" min="0" max="1000" step="1" required>
+          <label class="field-label" for="budget-runs-input">하루 처리 회차 수 (서울시간 자정부터 균등 분할)</label>
+          <input class="field" id="budget-runs-input" name="daily_run_count" type="number" min="1" max="24" step="1" required>
+          <label class="field-label" for="budget-share-input">신규 기사 비율 % (나머지는 과거 적체분)</label>
+          <input class="field" id="budget-share-input" name="fresh_share_percent" type="number" min="0" max="100" step="1" required>
+          <p class="form-error" id="budget-error" role="alert"></p>
+          <button class="button button-primary" id="budget-save" type="submit">예산 저장</button>
+        </form>
+      </section>
+
+      <section class="section push-panel" aria-labelledby="push-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Editorial push</p>
+            <h2 id="push-title">에디토리얼 알림 전달</h2>
+          </div>
+          <span class="badge" id="push-enabled" data-status="queued">상태 확인 중</span>
+        </div>
+        <dl class="push-metrics" aria-label="에디토리얼 알림 전달 요약">
+          <div class="push-metric" data-tone="success"><dt>성공</dt><dd id="push-sent">0</dd></div>
+          <div class="push-metric" data-tone="retry"><dt>재시도</dt><dd id="push-retries">0</dd></div>
+          <div class="push-metric" data-tone="failure"><dt>실패</dt><dd id="push-failed">0</dd></div>
+        </dl>
+        <dl class="push-details" aria-label="에디토리얼 알림 상세 상태">
+          <div class="push-detail"><dt>대기 / 처리 중 / 취소</dt><dd id="push-inflight">0 / 0 / 0</dd></div>
+          <div class="push-detail"><dt>활성 / 무효 기기</dt><dd id="push-registrations">0 / 0</dd></div>
+          <div class="push-detail"><dt>마지막 성공</dt><dd id="push-last-sent">—</dd></div>
+          <div class="push-detail"><dt>마지막 재시도</dt><dd id="push-last-retry">—</dd></div>
+          <div class="push-detail"><dt>마지막 실패</dt><dd id="push-last-failed">—</dd></div>
+          <div class="push-detail"><dt>집계 기준</dt><dd>누적 전달 기록</dd></div>
+        </dl>
+      </section>
+
+      <section class="section" aria-labelledby="workers-title">
+        <div class="section-heading">
+          <h2 id="workers-title">Worker 가동률</h2>
+          <span class="section-note" id="window-note">최근 15분 기준</span>
+        </div>
+        <div class="worker-list" id="worker-list">
+          <div class="worker-row" aria-hidden="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+          <div class="worker-row" aria-hidden="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="queue-title">
+        <div class="queue-toolbar">
+          <div>
+            <h2 id="queue-title">대기열 작업</h2>
+            <div class="filter-tabs" role="tablist" aria-label="대기열 상태">
+              <button class="filter-tab" type="button" role="tab" data-status="" aria-selected="true">전체</button>
+              <button class="filter-tab" type="button" role="tab" data-status="queued" aria-selected="false">대기</button>
+              <button class="filter-tab" type="button" role="tab" data-status="processing" aria-selected="false">처리 중</button>
+              <button class="filter-tab" type="button" role="tab" data-status="done" aria-selected="false">완료</button>
+              <button class="filter-tab" type="button" role="tab" data-status="dead" aria-selected="false">실패</button>
+            </div>
+          </div>
+          <label class="limit-control" for="limit-select">표시 개수
+            <select class="field" id="limit-select">
+              <option value="50">50</option>
+              <option value="100" selected>100</option>
+              <option value="200">200</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-shell" tabindex="0" aria-label="대기열 작업 표, 좌우로 스크롤 가능">
+          <table>
+            <thead><tr><th>작업</th><th>상태</th><th>시도</th><th>다음 처리</th><th>최근 변경</th><th>마지막 오류</th></tr></thead>
+            <tbody id="queue-body"><tr><td colspan="6" class="empty-row">대기열을 불러오는 중입니다.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="runs-title">
+        <div class="section-heading"><h2 id="runs-title">최근 수집 실행</h2><span class="section-note">최근 10회</span></div>
+        <div class="run-list" id="run-list"><div class="run-row" aria-hidden="true"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div></div>
+      </section>
+      </section>
+    </div>
+    <p id="live-status" class="sr-only" aria-live="polite"></p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+      const TOKEN_KEY = "gdelt.ops.token";
+      const POLL_MS = 5000;
+      const ANALYTICS_POLL_MS = 60000;
+      const TOP_PAGE_SIZE = 25;
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const statusLabels = { queued: "대기", processing: "처리 중", done: "완료", dead: "실패" };
+      const dom = Object.fromEntries([
+        "access-panel", "dashboard", "token-form", "token-input", "token-error", "connect-button",
+        "disconnect-button", "status-dot", "connection-label", "last-updated", "refresh-button",
+        "stale-alert", "analytics-error", "metric-available", "metric-due", "metric-processing", "metric-dead", "metric-workers",
+        "analytics-total-members", "analytics-today-dau", "analytics-current-mau",
+        "analytics-stickiness", "analytics-total-views", "analytics-coverage", "analytics-updated",
+        "overview-events-per-member", "overview-activity-period", "user-trend-chart",
+        "activity-active-members", "activity-total-events", "activity-events-per-member",
+        "activity-chart-title", "activity-chart-subtitle", "activity-chart", "activity-legend",
+        "activity-coverage-note", "monthly-controls", "content-ranking-title", "content-ranking-note",
+        "content-ranking-caveat", "popular-articles-body", "popular-prev", "popular-next", "popular-page",
+        "article-embedding-count", "article-embedding-percent", "article-embedding-progress", "article-embedding-updated",
+        "push-enabled", "push-sent", "push-retries", "push-failed", "push-inflight",
+        "push-registrations", "push-last-sent", "push-last-retry", "push-last-failed",
+        "budget-state", "budget-used", "budget-fresh", "budget-backlog", "budget-triage",
+        "budget-mode", "budget-ttl", "budget-updated", "budget-current-run",
+        "budget-current-allowance", "budget-current-remaining", "budget-next-run",
+        "budget-form", "budget-limit-input", "budget-share-input", "budget-runs-input",
+        "budget-error", "budget-save", "budget-domain-panel",
+        "budget-domain-core-limit", "budget-domain-core-document", "budget-domain-core-article",
+        "budget-domain-core-document-status", "budget-domain-core-held", "budget-domain-core-reader",
+        "budget-domain-crypto-limit", "budget-domain-crypto-document", "budget-domain-crypto-article",
+        "budget-domain-crypto-document-status", "budget-domain-crypto-held", "budget-domain-crypto-reader",
+        "timeline-worker-state", "timeline-total", "timeline-editions", "timeline-failed",
+        "timeline-current", "timeline-readable", "timeline-generated", "timeline-valid-until",
+        "timeline-nodes", "timeline-subscriptions", "timeline-last-run", "timeline-last-kind",
+        "timeline-pool", "timeline-cluster", "timeline-list-body", "timeline-runs-body",
+        "timeline-refresh-form", "timeline-refresh-button", "timeline-refresh-error",
+        "window-note", "worker-list", "queue-body", "run-list", "limit-select", "live-status"
+      ].map(id => [id, document.getElementById(id)]));
+
+      let token = sessionStorage.getItem(TOKEN_KEY) || "";
+      let selectedStatus = "";
+      let timer = null;
+      let analyticsTimer = null;
+      let inFlight = false;
+      let analyticsInFlight = false;
+      let hasSnapshot = false;
+      let hasAnalytics = false;
+      let activeView = "overview";
+      let activityView = "dau";
+      let dailyDays = 90;
+      let monthlyMonths = 12;
+      let analyticsData = null;
+      let analyticsFetchedAt = 0;
+      let popularPage = 0;
+      let contentRankingMode = "popular";
+      let budgetDomainsAvailable = false;
+
+      function setConnection(state, label) {
+        dom["status-dot"].dataset.state = state;
+        dom["connection-label"].textContent = label;
+      }
+
+      function showGate(message = "") {
+        clearTimeout(timer);
+        clearTimeout(analyticsTimer);
+        dom.dashboard.hidden = true;
+        dom["access-panel"].hidden = false;
+        dom["disconnect-button"].hidden = true;
+        dom["token-error"].textContent = message;
+        setConnection("", "연결 전");
+        requestAnimationFrame(() => dom["token-input"].focus());
+      }
+
+      function showDashboard() {
+        dom["access-panel"].hidden = true;
+        dom.dashboard.hidden = false;
+        dom["disconnect-button"].hidden = false;
+      }
+
+      function element(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
+
+      function percent(value) {
+        const number = Number(value) || 0;
+        return Math.min(100, Math.max(0, number));
+      }
+
+      function formatDate(value) {
+        if (!value) return "—";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "—";
+        return new Intl.DateTimeFormat("ko-KR", {
+          timeZone: "Asia/Seoul",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        }).format(date);
+      }
+
+      function relativeTime(value) {
+        if (!value) return "—";
+        const delta = new Date(value).getTime() - Date.now();
+        if (!Number.isFinite(delta)) return "—";
+        const abs = Math.abs(delta);
+        const suffix = delta >= 0 ? "후" : "전";
+        if (abs < 60000) return `${Math.max(0, Math.round(abs / 1000))}초 ${suffix}`;
+        if (abs < 3600000) return `${Math.round(abs / 60000)}분 ${suffix}`;
+        return `${Math.round(abs / 3600000)}시간 ${suffix}`;
+      }
+
+      function metric(target, value, unit = "건") {
+        target.textContent = String(Number(value) || 0);
+        if (unit) target.append(element("small", "", unit));
+      }
+
+      function analyticsMetric(target, value, unit = "") {
+        const unavailable = value === null || value === undefined || !Number.isFinite(Number(value));
+        target.dataset.unavailable = String(unavailable);
+        target.textContent = unavailable ? "—" : new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(Number(value));
+        if (!unavailable && unit) target.append(element("small", "", unit));
+      }
+
+      function formatKstDay(value, monthOnly = false) {
+        if (!value) return "—";
+        const date = new Date(`${String(value).slice(0, 10)}T00:00:00+09:00`);
+        if (Number.isNaN(date.getTime())) return "—";
+        return new Intl.DateTimeFormat("ko-KR", monthOnly
+          ? { timeZone: "Asia/Seoul", year: "numeric", month: "short" }
+          : { timeZone: "Asia/Seoul", year: "numeric", month: "short", day: "numeric" }
+        ).format(date);
+      }
+
+      function svgNode(tag, attributes = {}) {
+        const node = document.createElementNS(SVG_NS, tag);
+        for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, String(value));
+        return node;
+      }
+
+      function svgText(svg, x, y, textValue, anchor = "start", className = "") {
+        const node = svgNode("text", { x, y, "text-anchor": anchor, fill: "var(--ink-muted)", "font-size": 12 });
+        if (className) node.setAttribute("class", className);
+        node.textContent = textValue;
+        svg.append(node);
+        return node;
+      }
+
+      function chartCanvas(title, description) {
+        const svg = svgNode("svg", { viewBox: "0 0 1000 390", role: "img", preserveAspectRatio: "none" });
+        const titleNode = svgNode("title");
+        titleNode.textContent = title;
+        const descNode = svgNode("desc");
+        descNode.textContent = description;
+        svg.append(titleNode, descNode);
+        return svg;
+      }
+
+      function renderChartEmpty(target, message) {
+        target.replaceChildren(element("div", "chart-empty", message));
+      }
+
+      function labelIndexes(length, maximum = 7) {
+        if (length <= maximum) return new Set(Array.from({ length }, (_value, index) => index));
+        const indexes = new Set([0, length - 1]);
+        const step = (length - 1) / (maximum - 1);
+        for (let index = 1; index < maximum - 1; index += 1) indexes.add(Math.round(index * step));
+        return indexes;
+      }
+
+      function renderUserTrend(rows) {
+        const target = dom["user-trend-chart"];
+        if (!Array.isArray(rows) || rows.length < 2) {
+          renderChartEmpty(target, "추이를 그리려면 날짜별 회원 기록이 두 개 이상 필요합니다.");
+          return;
+        }
+        const svg = chartCanvas("사용자 추이", "신규 회원은 막대, 누적 회원은 선으로 표시합니다.");
+        const frame = { left: 62, right: 70, top: 28, bottom: 52 };
+        const width = 1000 - frame.left - frame.right;
+        const height = 390 - frame.top - frame.bottom;
+        const maxNew = Math.max(1, ...rows.map(row => Number(row.new_members) || 0));
+        const maxTotal = Math.max(1, ...rows.map(row => Number(row.cumulative_members) || 0));
+        for (let tick = 0; tick <= 4; tick += 1) {
+          const y = frame.top + height - (height * tick / 4);
+          svg.append(svgNode("line", { x1: frame.left, x2: 1000 - frame.right, y1: y, y2: y, stroke: "var(--line)", "stroke-width": 1 }));
+          svgText(svg, frame.left - 10, y + 4, Math.round(maxTotal * tick / 4).toLocaleString("ko-KR"), "end");
+          svgText(svg, 1000 - frame.right + 10, y + 4, Math.round(maxNew * tick / 4).toLocaleString("ko-KR"), "start");
+        }
+        svgText(svg, frame.left, 16, "누적 회원", "start");
+        svgText(svg, 1000 - frame.right, 16, "신규 회원", "end");
+        const step = width / rows.length;
+        const barWidth = Math.max(1.4, Math.min(12, step * .58));
+        const pathParts = [];
+        const labels = labelIndexes(rows.length);
+        rows.forEach((row, index) => {
+          const x = frame.left + step * index + step / 2;
+          const newValue = Number(row.new_members) || 0;
+          const totalValue = Number(row.cumulative_members) || 0;
+          const barHeight = newValue / maxNew * height;
+          const bar = svgNode("rect", { x: x - barWidth / 2, y: frame.top + height - barHeight, width: barWidth, height: Math.max(0, barHeight), rx: 2, fill: "var(--accent)", opacity: .72 });
+          const barTitle = svgNode("title");
+          barTitle.textContent = `${formatKstDay(row.date)} 신규 ${newValue.toLocaleString("ko-KR")}명`;
+          bar.append(barTitle);
+          svg.append(bar);
+          const lineY = frame.top + height - totalValue / maxTotal * height;
+          pathParts.push(`${index === 0 ? "M" : "L"}${x.toFixed(2)},${lineY.toFixed(2)}`);
+          if (labels.has(index)) svgText(svg, x, 374, String(row.date).slice(5).replace("-", "."), "middle");
+        });
+        svg.append(svgNode("path", { d: pathParts.join(" "), fill: "none", stroke: "var(--ink)", "stroke-width": 2.5, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+        target.replaceChildren(svg);
+      }
+
+      function renderLineTrend(rows, { key, dateKey, title, description, partial = false }) {
+        const target = dom["activity-chart"];
+        if (!Array.isArray(rows) || rows.length < 2) {
+          renderChartEmpty(target, "세션 활동 집계가 쌓이면 이 추이가 표시됩니다.");
+          return;
+        }
+        const svg = chartCanvas(title, description);
+        const frame = { left: 62, right: 28, top: 28, bottom: 52 };
+        const width = 1000 - frame.left - frame.right;
+        const height = 390 - frame.top - frame.bottom;
+        const maximum = Math.max(1, ...rows.map(row => Number(row[key]) || 0));
+        for (let tick = 0; tick <= 4; tick += 1) {
+          const y = frame.top + height - height * tick / 4;
+          svg.append(svgNode("line", { x1: frame.left, x2: 1000 - frame.right, y1: y, y2: y, stroke: "var(--line)", "stroke-width": 1 }));
+          svgText(svg, frame.left - 10, y + 4, Math.round(maximum * tick / 4).toLocaleString("ko-KR"), "end");
+        }
+        const labels = labelIndexes(rows.length);
+        const denominator = Math.max(1, rows.length - 1);
+        const points = rows.map((row, index) => {
+          const x = frame.left + width * index / denominator;
+          const y = frame.top + height - (Number(row[key]) || 0) / maximum * height;
+          if (labels.has(index)) svgText(svg, x, 374, partial ? formatKstDay(row[dateKey], true) : String(row[dateKey]).slice(5).replace("-", "."), "middle");
+          return { x, y, row };
+        });
+        svg.append(svgNode("path", { d: points.map((point, index) => `${index ? "L" : "M"}${point.x.toFixed(2)},${point.y.toFixed(2)}`).join(" "), fill: "none", stroke: "var(--accent)", "stroke-width": 3, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+        for (const point of points) {
+          const isPartial = partial && point.row.is_partial === true;
+          const circle = svgNode("circle", { cx: point.x, cy: point.y, r: isPartial ? 5 : 3.5, fill: isPartial ? "var(--surface)" : "var(--accent)", stroke: "var(--accent)", "stroke-width": isPartial ? 2 : 0 });
+          const circleTitle = svgNode("title");
+          circleTitle.textContent = `${formatKstDay(point.row[dateKey], partial)} ${Number(point.row[key] || 0).toLocaleString("ko-KR")}명${isPartial ? " · 부분 집계" : ""}`;
+          circle.append(circleTitle);
+          svg.append(circle);
+        }
+        target.replaceChildren(svg);
+      }
+
+      function renderActivityMix(rows) {
+        const target = dom["activity-chart"];
+        if (!Array.isArray(rows) || rows.length === 0) {
+          renderChartEmpty(target, "표시할 활동 유형 기록이 없습니다.");
+          return;
+        }
+        const labels = { search: "검색", article_opened: "기사 열기", scene_viewed: "장면 보기", article_completed: "완독" };
+        const svg = chartCanvas("활동 유형 비중", "검색, 기사 열기, 장면 보기, 완독의 건수와 비중입니다.");
+        const maximum = Math.max(1, ...rows.map(row => Number(row.count) || 0));
+        rows.forEach((row, index) => {
+          const y = 55 + index * 82;
+          const x = 170;
+          const width = (Number(row.count) || 0) / maximum * 690;
+          svgText(svg, 150, y + 21, labels[row.event_type] || row.event_type, "end");
+          svg.append(svgNode("rect", { x, y, width: 690, height: 30, rx: 6, fill: "var(--surface-muted)" }));
+          svg.append(svgNode("rect", { x, y, width: Math.max(0, width), height: 30, rx: 6, fill: "var(--accent)", opacity: .78 }));
+          svgText(svg, 880, y + 21, `${Number(row.count || 0).toLocaleString("ko-KR")}건 · ${Number(row.share || 0).toFixed(1)}%`, "start");
+        });
+        target.replaceChildren(svg);
+      }
+
+      function renderPopularArticles() {
+        const modes = {
+          popular: {
+            items: analyticsData?.popular_articles || [],
+            title: "인기 기사 Top 100",
+            note: "현재 공개·읽기 가능한 기사 · 전체 기간 누적 조회수",
+            empty: "조회 기록이 있는 공개 기사가 없습니다."
+          },
+          high: {
+            items: analyticsData?.high_view_rate_articles || [],
+            title: "조회/노출 비율 높은 기사 Top 100",
+            note: "최소 노출 5회 · 기사별 첫 피드 노출 이후 조회 기준",
+            empty: "노출 5회 이상인 공개 기사가 아직 없습니다."
+          },
+          low: {
+            items: analyticsData?.low_view_rate_articles || [],
+            title: "조회/노출 비율 낮은 기사 Top 100",
+            note: "최소 노출 5회 · 0회 조회 기사도 포함",
+            empty: "노출 5회 이상인 공개 기사가 아직 없습니다."
+          }
+        };
+        const mode = modes[contentRankingMode] || modes.popular;
+        const items = Array.isArray(mode.items) ? mode.items : [];
+        dom["content-ranking-title"].textContent = mode.title;
+        dom["content-ranking-note"].textContent = mode.note;
+        document.querySelectorAll("[data-content-ranking]").forEach(button => {
+          button.setAttribute("aria-selected", String(button.dataset.contentRanking === contentRankingMode));
+        });
+        const pageCount = Math.max(1, Math.ceil(items.length / TOP_PAGE_SIZE));
+        popularPage = Math.min(popularPage, pageCount - 1);
+        const fragment = document.createDocumentFragment();
+        const pageItems = items.slice(popularPage * TOP_PAGE_SIZE, (popularPage + 1) * TOP_PAGE_SIZE);
+        if (pageItems.length === 0) {
+          const row = element("tr");
+          const cell = element("td", "empty-row", mode.empty);
+          cell.colSpan = 7;
+          row.append(cell);
+          fragment.append(row);
+        } else {
+          for (const item of pageItems) {
+            const row = element("tr");
+            const article = element("td");
+            article.append(element("div", "popular-title", item.headline || "제목 없음"));
+            article.append(element("div", "popular-domain", item.domain || "출처 없음"));
+            row.append(
+              element("td", "numeric", String(item.rank || "—")),
+              article,
+              element("td", "numeric", formatKstDay(item.published_at)),
+              element("td", "numeric", Number(item.view_count || 0).toLocaleString("ko-KR")),
+              element("td", "numeric", contentRankingMode === "popular" ? "—" : Number(item.impression_count || 0).toLocaleString("ko-KR")),
+              element("td", "numeric", contentRankingMode === "popular" ? "—" : `${Number(item.view_rate_percent || 0).toFixed(1)}%`),
+              element("td", "numeric", contentRankingMode === "popular" ? "—" : formatDate(item.first_impressed_at))
+            );
+            fragment.append(row);
+          }
+        }
+        dom["popular-articles-body"].replaceChildren(fragment);
+        dom["popular-page"].textContent = `${popularPage + 1} / ${pageCount}`;
+        dom["popular-prev"].disabled = popularPage === 0;
+        dom["popular-next"].disabled = popularPage >= pageCount - 1;
+      }
+
+      function renderActivityStage() {
+        const legend = document.createDocumentFragment();
+        if (activityView === "mau") {
+          dom["activity-chart-title"].textContent = "MAU 추이";
+          dom["activity-chart-subtitle"].textContent = "한국 달력 월별로 로그인 세션을 갱신한 고유 회원입니다.";
+          dom["monthly-controls"].hidden = false;
+          renderLineTrend(analyticsData?.mau_trend, { key: "active_members", dateKey: "month", title: "MAU 추이", description: "월별 활성 회원 수이며 열린 원은 부분 집계 월입니다.", partial: true });
+          const key = element("span", "legend-key");
+          key.append(element("span", "legend-swatch partial"), document.createTextNode("부분 집계 월"));
+          legend.append(key);
+        } else if (activityView === "mix") {
+          dom["activity-chart-title"].textContent = "활동 유형 비중";
+          dom["activity-chart-subtitle"].textContent = "같은 기간에 기록된 검색·기사 열기·장면 보기·완독의 구성입니다.";
+          dom["monthly-controls"].hidden = true;
+          renderActivityMix(analyticsData?.activity?.event_types);
+          legend.append(element("span", "legend-key", "건수와 전체 활동 중 비중을 직접 표시"));
+        } else {
+          dom["activity-chart-title"].textContent = "DAU 추이";
+          dom["activity-chart-subtitle"].textContent = "로그인 세션을 갱신한 일별 고유 회원입니다.";
+          dom["monthly-controls"].hidden = true;
+          renderLineTrend(analyticsData?.dau_trend, { key: "active_members", dateKey: "date", title: "DAU 추이", description: "한국시간 일별 활성 회원 수입니다." });
+          legend.append(element("span", "legend-key", "로그인 세션 갱신 회원"));
+        }
+        dom["activity-legend"].replaceChildren(legend);
+      }
+
+      function renderAnalytics(data) {
+        analyticsData = data;
+        const summary = data?.summary || {};
+        const activity = data?.activity || {};
+        analyticsMetric(dom["analytics-total-members"], summary.total_members, "명");
+        analyticsMetric(dom["analytics-today-dau"], summary.today_dau, "명");
+        analyticsMetric(dom["analytics-current-mau"], summary.current_month_mau, "명");
+        analyticsMetric(dom["analytics-stickiness"], summary.dau_mau_ratio, "%");
+        analyticsMetric(dom["analytics-total-views"], summary.total_article_views, "회");
+        analyticsMetric(dom["overview-events-per-member"], activity.events_per_active_member, "회");
+        analyticsMetric(dom["activity-active-members"], activity.active_members, "명");
+        analyticsMetric(dom["activity-total-events"], activity.total_events, "회");
+        analyticsMetric(dom["activity-events-per-member"], activity.events_per_active_member, "회");
+        dom["overview-activity-period"].textContent = activity.period_start
+          ? `${formatKstDay(activity.period_start)}부터 ${formatKstDay(activity.period_end)}까지`
+          : "세션 활동 집계 시작을 기다리는 중입니다.";
+        const started = data?.coverage?.session_activity_started_on;
+        const through = data?.coverage?.session_activity_through_on;
+        dom["analytics-coverage"].textContent = started ? `${formatKstDay(started)} 시작` : "집계 대기";
+        dom["analytics-updated"].textContent = formatDate(data?.generated_at);
+        dom["activity-coverage-note"].textContent = started
+          ? `계정 + 익명 설치 활동 coverage: ${formatKstDay(started)}–${formatKstDay(through)} · Asia/Seoul`
+          : "첫 계정 또는 익명 설치 활동부터 DAU·MAU 추이를 표시합니다.";
+        renderUserTrend(data?.user_trend);
+        renderActivityStage();
+        renderPopularArticles();
+        dom["live-status"].textContent = "사용자·활동·콘텐츠 분석을 갱신했습니다.";
+      }
+
+      function activateView(view, moveFocus = false) {
+        activeView = view;
+        document.querySelectorAll(".view-tab").forEach(tab => {
+          const selected = tab.dataset.view === view;
+          tab.setAttribute("aria-selected", String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          if (selected && moveFocus) tab.focus();
+        });
+        document.querySelectorAll(".view-panel").forEach(panel => {
+          panel.hidden = panel.id !== `panel-${view}`;
+        });
+        clearTimeout(timer);
+        clearTimeout(analyticsTimer);
+        if (view === "system") refreshSnapshot();
+        else if (!analyticsData || Date.now() - analyticsFetchedAt > ANALYTICS_POLL_MS) refreshAnalytics();
+        else scheduleAnalytics();
+      }
+
+      function progressGroup(label, value, history = false) {
+        const group = element("div", "bar-group");
+        const labelRow = element("div", "bar-label");
+        labelRow.append(element("span", "", label), element("strong", "", `${percent(value).toFixed(1)}%`));
+        const track = element("div", "bar-track");
+        const fill = element("div", `bar-fill${history ? " history" : ""}`);
+        fill.style.width = `${percent(value)}%`;
+        fill.setAttribute("role", "progressbar");
+        fill.setAttribute("aria-label", label);
+        fill.setAttribute("aria-valuemin", "0");
+        fill.setAttribute("aria-valuemax", "100");
+        fill.setAttribute("aria-valuenow", String(percent(value)));
+        track.append(fill);
+        group.append(labelRow, track);
+        return group;
+      }
+
+      function renderWorkers(workers) {
+        const fragment = document.createDocumentFragment();
+        let active = 0;
+        let capacity = 0;
+        for (const worker of workers || []) {
+          active += Number(worker.active_slots) || 0;
+          capacity += Number(worker.capacity) || 0;
+          const row = element("div", "worker-row");
+          const title = element("div", "worker-title");
+          title.append(element("span", "worker-glyph"));
+          const copy = element("div");
+          copy.append(element("h3", "", worker.label || worker.kind || "Worker"));
+          copy.append(element("div", "worker-slots", `${worker.active_slots || 0} / ${worker.capacity || 0} 슬롯`));
+          title.append(copy);
+          row.append(
+            title,
+            progressGroup("현재 점유", worker.current_percent),
+            progressGroup("최근 구간", worker.utilization_percent, true)
+          );
+          fragment.append(row);
+        }
+        dom["worker-list"].replaceChildren(fragment);
+        dom["metric-workers"].textContent = `${active} / ${capacity}`;
+      }
+
+      function renderArticleEmbeddings(progress) {
+        const fill = dom["article-embedding-progress"];
+
+        function renderUnavailable(disabled = false) {
+          dom["article-embedding-count"].textContent = "— / —건";
+          dom["article-embedding-percent"].textContent = disabled ? "꺼짐" : "집계 불가";
+          dom["article-embedding-updated"].textContent = disabled ? "기사 임베딩 꺼짐" : "마지막 기록 —";
+          fill.style.width = "0%";
+          fill.removeAttribute("aria-valuenow");
+          fill.setAttribute("aria-valuetext", disabled ? "기사 임베딩이 꺼져 있음" : "기사 임베딩 진행률을 불러올 수 없음");
+          if (disabled) fill.setAttribute("aria-disabled", "true");
+          else fill.removeAttribute("aria-disabled");
+        }
+
+        if (progress?.status === "disabled") {
+          renderUnavailable(true);
+          return;
+        }
+
+        const embedded = progress?.embedded_count;
+        const total = progress?.total_count;
+        const reportedPercent = progress?.percent;
+        const countsAreValid = progress?.status === "ready"
+          && Number.isSafeInteger(embedded)
+          && embedded >= 0
+          && Number.isSafeInteger(total)
+          && total >= embedded;
+        const expectedPercent = countsAreValid
+          ? (total === 0 ? 0 : Math.round((embedded / total) * 1000) / 10)
+          : null;
+        const percentIsValid = typeof reportedPercent === "number"
+          && Number.isFinite(reportedPercent)
+          && reportedPercent >= 0
+          && reportedPercent <= 100
+          && Number(reportedPercent.toFixed(1)) === expectedPercent;
+
+        if (!countsAreValid || !percentIsValid) {
+          renderUnavailable();
+          return;
+        }
+
+        const displayPercent = expectedPercent.toFixed(1);
+        dom["article-embedding-count"].textContent = `${embedded} / ${total}건`;
+        dom["article-embedding-percent"].textContent = `${displayPercent}%`;
+        const recordedAt = formatDate(progress.updated_at);
+        dom["article-embedding-updated"].textContent = recordedAt === "—"
+          ? "마지막 성공 기록 없음"
+          : `마지막 기록 ${recordedAt}`;
+        fill.style.width = `${expectedPercent}%`;
+        fill.removeAttribute("aria-disabled");
+        fill.setAttribute("aria-valuenow", String(expectedPercent));
+        fill.setAttribute("aria-valuetext", `${embedded} / ${total}건 임베딩 완료, ${displayPercent}%`);
+      }
+
+      function renderPush(push) {
+        const deliveries = push?.deliveries || {};
+        const registrations = push?.registrations || {};
+        const enabled = push?.enabled === true;
+        dom["push-enabled"].textContent = enabled ? "발송 켜짐" : "발송 꺼짐 · 준비 상태";
+        dom["push-enabled"].dataset.status = enabled ? "done" : "queued";
+        metric(dom["push-sent"], deliveries.sent, "");
+        metric(dom["push-retries"], deliveries.retry_attempts, "");
+        metric(dom["push-failed"], deliveries.failed, "");
+        dom["push-inflight"].textContent = `${Number(deliveries.queued) || 0} / ${Number(deliveries.processing) || 0} / ${Number(deliveries.cancelled) || 0}`;
+        dom["push-registrations"].textContent = `${Number(registrations.active) || 0} / ${Number(registrations.invalid) || 0}`;
+        dom["push-last-sent"].textContent = formatDate(push?.last_sent_at);
+        dom["push-last-retry"].textContent = formatDate(push?.last_retry_at);
+        dom["push-last-failed"].textContent = formatDate(push?.last_failed_at);
+      }
+
+      const TIMELINE_RUN_LABELS = {
+        published: "발행",
+        not_due: "회차 아님",
+        cluster_unavailable: "군집 없음",
+        insufficient_clusters: "군집 부족",
+        invalid_timeline_plan: "구성 실패",
+        provider_transient: "provider 일시 오류",
+        provider_permanent: "provider 거절",
+        timeline_unavailable: "일시 오류",
+        exception: "예외"
+      };
+
+      function timelineRunLabel(kind) {
+        if (!kind) return "—";
+        return TIMELINE_RUN_LABELS[kind] || String(kind);
+      }
+
+      function renderTimelines(data) {
+        const worker = data?.worker || {};
+        const totals = data?.totals || {};
+        const current = data?.current || null;
+        const pool = data?.candidate_pool || {};
+        const cluster = data?.cluster_snapshot || null;
+        const lastRun = worker.last_run || {};
+
+        const off = worker.enabled !== true;
+        const stalled = !off && worker.running !== true;
+        dom["timeline-worker-state"].textContent = off
+          ? "워커 꺼짐"
+          : (worker.rerank_configured !== true
+            ? "rerank 미설정 · 정지"
+            : (stalled ? "워커 정지" : `가동 중 · ${Number(worker.poll_seconds) || 0}초 주기`));
+        dom["timeline-worker-state"].dataset.status = off || stalled || worker.rerank_configured !== true
+          ? "queued"
+          : "done";
+
+        metric(dom["timeline-total"], totals.distinct_timelines, "");
+        metric(dom["timeline-editions"], totals.timeline_editions, "");
+        metric(dom["timeline-failed"], totals.failed_catalogs, "");
+        dom["timeline-nodes"].textContent = `${Number(totals.nodes) || 0}개`;
+        dom["timeline-subscriptions"].textContent = `${Number(totals.subscriptions) || 0}건`;
+
+        if (current) {
+          dom["timeline-current"].textContent = `${current.timeline_status === "fresh" ? "최신" : "기한 경과"} · ${String(current.candidate_slot || "—")}`;
+          dom["timeline-readable"].textContent = `${Number(current.readable_timeline_count) || 0} / ${Number(current.published_timeline_count) || 0}개`;
+          dom["timeline-generated"].textContent = `${formatDate(current.generated_at)} (${relativeTime(current.generated_at)})`;
+          dom["timeline-valid-until"].textContent = `${formatDate(current.valid_until)} (${relativeTime(current.valid_until)})`;
+        } else {
+          dom["timeline-current"].textContent = data?.current_error ? "집계 불가" : "없음 · 둘러보기에 타임라인 미노출";
+          dom["timeline-readable"].textContent = "— / —";
+          dom["timeline-generated"].textContent = "—";
+          dom["timeline-valid-until"].textContent = "—";
+        }
+
+        dom["timeline-last-run"].textContent = worker.last_run_at
+          ? `${formatDate(worker.last_run_at)} (${relativeTime(worker.last_run_at)})`
+          : "이번 프로세스에서 아직 없음";
+        const publishedTimelines = Number(lastRun.timelines);
+        dom["timeline-last-kind"].textContent = lastRun.kind
+          ? `${timelineRunLabel(lastRun.kind)}${Number.isFinite(publishedTimelines) ? ` · ${publishedTimelines}개` : ""} · 후보 ${Number(lastRun.candidates) || 0}건`
+          : "—";
+        dom["timeline-pool"].textContent = Number(pool.candidate_count)
+          ? `${Number(pool.candidate_count)}건 · ${Number(pool.candidate_days) || 0}일 (${formatKstDay(pool.oldest_day)}–${formatKstDay(pool.newest_day)}) · 추출 ${Number(worker.candidate_day_span) || 0}일`
+          : (data?.metrics_error ? "집계 불가" : "후보 없음");
+        dom["timeline-cluster"].textContent = cluster
+          ? `${String(cluster.slot)} · ${Number(cluster.cluster_count) || 0}군집 · ${String(cluster.algorithm_version)} · ${formatDate(cluster.valid_until)}까지`
+          : (data?.cluster_snapshot_error ? "집계 불가" : "없음");
+
+        const listBody = dom["timeline-list-body"];
+        listBody.replaceChildren();
+        const timelines = current?.timelines || [];
+        if (!timelines.length) {
+          const row = element("tr");
+          row.append(element("td", "", "표시할 타임라인이 없습니다."));
+          row.firstChild.colSpan = 6;
+          listBody.append(row);
+        } else {
+          for (const timeline of timelines) {
+            const row = element("tr");
+            row.append(element("td", "", String(timeline.rank)));
+            row.append(element("td", "", String(timeline.title || "—")));
+            row.append(element("td", "", `${formatKstDay(timeline.started_at)}–${formatKstDay(timeline.ended_at)}`));
+            row.append(element("td", "", `${Number(timeline.node_count) || 0}개`));
+            row.append(element("td", "", `${Number(timeline.main_node_count) || 0} / ${Number(timeline.main_day_count) || 0}일`));
+            row.append(element("td", "", `${Number(timeline.domain_count) || 0}곳`));
+            listBody.append(row);
+          }
+        }
+
+        const runsBody = dom["timeline-runs-body"];
+        runsBody.replaceChildren();
+        const runs = data?.recent_catalogs || [];
+        if (!runs.length) {
+          const row = element("tr");
+          row.append(element("td", "", "기록된 회차가 없습니다."));
+          row.firstChild.colSpan = 7;
+          runsBody.append(row);
+        } else {
+          for (const run of runs) {
+            const row = element("tr");
+            row.append(element("td", "", String(run.candidate_slot || "—")));
+            row.append(element("td", "", String(run.status || "—")));
+            row.append(element("td", "", `${Number(run.timeline_count) || 0}개`));
+            row.append(element("td", "", `${Number(run.candidate_count) || 0}건`));
+            row.append(element("td", "", `${Number(run.attempt_count) || 0} / ${Number(run.max_attempts) || 0}`));
+            row.append(element("td", "", run.error_code ? timelineRunLabel(run.error_code) : "—"));
+            row.append(element("td", "", formatDate(run.updated_at || run.created_at)));
+            runsBody.append(row);
+          }
+        }
+      }
+
+      function renderBudgetDomains(domains) {
+        const byName = new Map((Array.isArray(domains) ? domains : []).map(item => [item.coverage_domain, item]));
+        budgetDomainsAvailable = byName.has("core") && byName.has("crypto");
+        dom["budget-domain-panel"].hidden = !budgetDomainsAvailable;
+        if (!budgetDomainsAvailable) return;
+        for (const name of ["core", "crypto"]) {
+          const domain = byName.get(name);
+          const article = domain.subtypes?.article || {};
+          const documentBudget = domain.subtypes?.document || {};
+          const limitInput = dom[`budget-domain-${name}-limit`];
+          const documentInput = dom[`budget-domain-${name}-document`];
+          if (document.activeElement !== limitInput) limitInput.value = String(Number(domain.daily_map_limit) || 0);
+          if (document.activeElement !== documentInput) documentInput.value = String(Number(domain.document_map_limit) || 0);
+          dom[`budget-domain-${name}-article`].textContent = `${Number(article.consumed) || 0} / ${Number(article.remaining) || 0}`;
+          dom[`budget-domain-${name}-document-status`].textContent = `${Number(documentBudget.consumed) || 0} / ${Number(documentBudget.remaining) || 0}`;
+          dom[`budget-domain-${name}-held`].textContent = `${Number(domain.held_maps) || 0} / ${Number(domain.quarantined) || 0}`;
+          const reader = dom[`budget-domain-${name}-reader`];
+          reader.textContent = domain.reader_exposed === true ? "독자 노출" : "held 유지";
+          reader.dataset.status = domain.reader_exposed === true ? "done" : "queued";
+        }
+      }
+
+      function renderBudget(budget) {
+        if (!budget) return;
+        const buckets = budget.buckets || {};
+        const fresh = buckets.fresh || {};
+        const backlog = buckets.backlog || {};
+        const limit = Number(budget.daily_map_limit) || 0;
+        const runCount = Number(budget.daily_run_count) || 1;
+        const enabled = budget.enabled === true && limit > 0;
+        dom["budget-state"].textContent = !budget.enabled
+          ? "예산 미적용 · 회차 설정 대기"
+          : (limit === 0 ? "Map 정지 (0건)" : `하루 ${limit}건 · ${runCount}회`);
+        dom["budget-state"].dataset.status = enabled ? "done" : "queued";
+        dom["budget-used"].textContent = `${Number(budget.total_consumed) || 0} / ${limit}`;
+        dom["budget-fresh"].textContent = `${Number(fresh.remaining) || 0} / ${Number(fresh.quota) || 0}`;
+        dom["budget-backlog"].textContent = `${Number(backlog.remaining) || 0} / ${Number(backlog.quota) || 0}`;
+        dom["budget-current-run"].textContent = `${Number(budget.current_run) || 1} / ${runCount}`;
+        dom["budget-current-allowance"].textContent = `${Number(budget.current_allowance) || 0}건`;
+        dom["budget-current-remaining"].textContent = `${Number(budget.current_remaining) || 0}건`;
+        dom["budget-next-run"].textContent = budget.next_run_at ? formatDate(budget.next_run_at) : "오늘 마지막 회차";
+        const triage = budget.triage || {};
+        dom["budget-triage"].textContent = `${Number(triage.scored) || 0} / ${Number(triage.pending) || 0}`;
+        dom["budget-mode"].textContent = triage.mode || "—";
+        dom["budget-ttl"].textContent = `${Number(budget.candidate_ttl_days) || 0}일 뒤 만료 삭제`;
+        dom["budget-updated"].textContent = budget.updated_at ? formatDate(budget.updated_at) : "기본값 사용 중";
+        if (document.activeElement !== dom["budget-limit-input"]) {
+          dom["budget-limit-input"].value = String(limit);
+        }
+        if (document.activeElement !== dom["budget-share-input"]) {
+          dom["budget-share-input"].value = String(Number(budget.fresh_share_percent) || 0);
+        }
+        if (document.activeElement !== dom["budget-runs-input"]) {
+          dom["budget-runs-input"].value = String(runCount);
+        }
+        renderBudgetDomains(budget.domains);
+      }
+
+      function renderQueue(items) {
+        const fragment = document.createDocumentFragment();
+        if (!items || items.length === 0) {
+          const row = element("tr");
+          const cell = element("td", "empty-row", selectedStatus ? "이 상태의 작업이 없습니다." : "대기열이 비어 있습니다. 새 실패 작업이 생기면 여기에 표시됩니다.");
+          cell.colSpan = 6;
+          row.append(cell);
+          fragment.append(row);
+        } else {
+          for (const item of items) {
+            const row = element("tr");
+            const article = element("td", "article-cell");
+            article.append(element("span", "article-title", item.title || "제목 없는 기사"));
+            article.append(element("span", "article-meta", item.domain || "출처 없음"));
+            article.append(element("span", "article-meta mono", String(item.article_id || "").slice(0, 14)));
+            const status = element("td");
+            const badge = element("span", "badge", statusLabels[item.status] || item.status || "알 수 없음");
+            badge.dataset.status = item.status || "";
+            status.append(badge);
+            const attempts = element("td", "numeric", `${item.attempts || 0} / ${item.max_attempts || 0}`);
+            const next = element("td", "numeric", item.status === "queued" ? relativeTime(item.next_attempt_at) : "—");
+            next.title = formatDate(item.next_attempt_at);
+            const updated = element("td", "numeric", relativeTime(item.updated_at));
+            updated.title = formatDate(item.updated_at);
+            const error = element("td", "error-cell");
+            const errorText = element("span", "error-text", item.last_error || "—");
+            errorText.title = item.last_error || "";
+            error.append(errorText);
+            row.append(article, status, attempts, next, updated, error);
+            fragment.append(row);
+          }
+        }
+        dom["queue-body"].replaceChildren(fragment);
+      }
+
+      function renderRuns(runs) {
+        const fragment = document.createDocumentFragment();
+        if (!runs || runs.length === 0) {
+          fragment.append(element("div", "empty-row", "아직 기록된 수집 실행이 없습니다."));
+        } else {
+          for (const run of runs) {
+            const row = element("div", "run-row");
+            const identity = element("div");
+            identity.append(element("h3", "", run.job_name || "이름 없는 작업"));
+            identity.append(element("div", "run-query", run.query || "query 기록 없음"));
+            const badge = element("span", "badge", run.finished_at ? (run.ok ? "성공" : "실패") : "실행 중");
+            badge.dataset.status = run.finished_at ? (run.ok ? "done" : "dead") : "processing";
+            const counts = element("div", "run-counts", `수집 ${run.fetched || 0} · 매핑 ${run.mapped || 0} · 실패 ${run.maps_failed || 0}`);
+            const time = element("time", "run-counts", formatDate(run.started_at));
+            row.append(identity, badge, counts, time);
+            fragment.append(row);
+          }
+        }
+        dom["run-list"].replaceChildren(fragment);
+      }
+
+      function render(snapshot) {
+        const stats = snapshot.queue?.stats || {};
+        metric(dom["metric-available"], snapshot.available_articles);
+        metric(dom["metric-due"], stats.due_now);
+        metric(dom["metric-processing"], stats.processing);
+        metric(dom["metric-dead"], stats.dead);
+        dom["window-note"].textContent = `최근 ${snapshot.window_minutes || 15}분 기준`;
+        renderArticleEmbeddings(snapshot.article_embeddings);
+        renderPush(snapshot.push);
+        renderBudget(snapshot.map_budget);
+        renderWorkers(snapshot.workers);
+        renderQueue(snapshot.queue?.items);
+        renderRuns(snapshot.recent_runs);
+        dom["last-updated"].textContent = `${formatDate(snapshot.generated_at)} 갱신`;
+        dom["live-status"].textContent = "운영 현황을 갱신했습니다.";
+      }
+
+      function scheduleAnalytics() {
+        clearTimeout(analyticsTimer);
+        if (!document.hidden && token && activeView !== "system") {
+          analyticsTimer = setTimeout(refreshAnalytics, ANALYTICS_POLL_MS);
+        }
+      }
+
+      async function refreshAnalytics() {
+        if (!token || analyticsInFlight || document.hidden) return;
+        analyticsInFlight = true;
+        dom["refresh-button"].disabled = true;
+        if (activeView !== "system") setConnection("loading", "분석 갱신 중");
+        const params = new URLSearchParams({ daily_days: String(dailyDays), monthly_months: String(monthlyMonths) });
+        try {
+          const response = await fetch(`/ops/api/analytics?${params}`, {
+            headers: { "X-API-Token": token },
+            cache: "no-store"
+          });
+          if (response.status === 401) {
+            sessionStorage.removeItem(TOKEN_KEY);
+            token = "";
+            hasAnalytics = false;
+            showGate("token이 올바르지 않거나 만료되었습니다.");
+            return;
+          }
+          if (!response.ok) throw new Error(`analytics 요청 실패 (${response.status})`);
+          renderAnalytics(await response.json());
+          analyticsFetchedAt = Date.now();
+          hasAnalytics = true;
+          dom["analytics-error"].hidden = true;
+          if (activeView !== "system") setConnection("live", "1분마다 갱신");
+        } catch (error) {
+          dom["analytics-error"].textContent = `분석 데이터를 가져오지 못했습니다. ${error.message || "연결을 확인해 주세요."}`;
+          dom["analytics-error"].hidden = false;
+          if (activeView !== "system") setConnection("stale", hasAnalytics ? "마지막 분석 표시 중" : "분석 연결 오류");
+        } finally {
+          analyticsInFlight = false;
+          dom["refresh-button"].disabled = inFlight;
+          scheduleAnalytics();
+        }
+      }
+
+      function schedule() {
+        clearTimeout(timer);
+        if (!document.hidden && token && activeView === "system") timer = setTimeout(refreshSnapshot, POLL_MS);
+      }
+
+      async function refreshTimelines() {
+        // The timeline panel is additive: a failure here must not mark the
+        // whole system view stale.
+        try {
+          const response = await fetch("/ops/api/timelines", {
+            headers: { "X-API-Token": token },
+            cache: "no-store"
+          });
+          if (!response.ok) throw new Error(String(response.status));
+          renderTimelines(await response.json());
+        } catch (error) {
+          dom["timeline-worker-state"].textContent = "상태 조회 실패";
+          dom["timeline-worker-state"].dataset.status = "dead";
+        }
+      }
+
+      async function refreshSnapshot() {
+        if (!token || inFlight || document.hidden) return;
+        inFlight = true;
+        dom["refresh-button"].disabled = true;
+        setConnection("loading", "갱신 중");
+        const params = new URLSearchParams({ limit: dom["limit-select"].value });
+        if (selectedStatus) params.set("status", selectedStatus);
+        try {
+          const response = await fetch(`/ops/api/snapshot?${params}`, {
+            headers: { "X-API-Token": token },
+            cache: "no-store"
+          });
+          if (response.status === 401) {
+            sessionStorage.removeItem(TOKEN_KEY);
+            token = "";
+            hasSnapshot = false;
+            showGate("token이 올바르지 않거나 만료되었습니다.");
+            return;
+          }
+          if (response.status === 503) {
+            sessionStorage.removeItem(TOKEN_KEY);
+            token = "";
+            hasSnapshot = false;
+            showGate("서버에 API_TOKEN이 설정되지 않았습니다.");
+            return;
+          }
+          if (!response.ok) throw new Error(`snapshot 요청 실패 (${response.status})`);
+          render(await response.json());
+          await refreshTimelines();
+          hasSnapshot = true;
+          dom["stale-alert"].hidden = true;
+          if (activeView === "system") setConnection("live", "5초마다 갱신");
+        } catch (error) {
+          dom["stale-alert"].textContent = `새 데이터를 가져오지 못했습니다. ${error.message || "연결을 확인해 주세요."}`;
+          dom["stale-alert"].hidden = false;
+          if (activeView === "system") setConnection("stale", hasSnapshot ? "마지막 데이터 표시 중" : "연결 오류");
+        } finally {
+          inFlight = false;
+          dom["refresh-button"].disabled = false;
+          schedule();
+        }
+      }
+
+      dom["token-form"].addEventListener("submit", event => {
+        event.preventDefault();
+        const value = dom["token-input"].value.trim();
+        if (!value) return;
+        token = value;
+        sessionStorage.setItem(TOKEN_KEY, token);
+        dom["token-error"].textContent = "";
+        dom["token-input"].value = "";
+        showDashboard();
+        refreshAnalytics();
+        refreshSnapshot();
+      });
+
+      dom["disconnect-button"].addEventListener("click", () => {
+        sessionStorage.removeItem(TOKEN_KEY);
+        token = "";
+        hasSnapshot = false;
+        hasAnalytics = false;
+        analyticsData = null;
+        showGate();
+      });
+
+      dom["timeline-refresh-form"].addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!token) return;
+        if (!window.confirm("지금 타임라인을 다시 생성합니다. rerank 1회와 copy 1회 비용이 발생합니다. 계속할까요?")) return;
+        dom["timeline-refresh-error"].textContent = "";
+        dom["timeline-refresh-button"].disabled = true;
+        dom["timeline-refresh-button"].textContent = "다시 생성 중… (최대 1분)";
+        try {
+          const response = await fetch("/ops/api/timelines/refresh", {
+            method: "POST",
+            headers: { "X-API-Token": token }
+          });
+          if (!response.ok) throw new Error(`재생성 실패 (${response.status})`);
+          const body = await response.json();
+          const kind = body?.result?.kind;
+          dom["live-status"].textContent = kind === "published"
+            ? `타임라인 ${Number(body.result.timelines) || 0}개를 다시 생성했습니다.`
+            : `재생성이 발행까지 가지 못했습니다: ${timelineRunLabel(kind)}`;
+          if (kind !== "published") {
+            dom["timeline-refresh-error"].textContent = `결과: ${timelineRunLabel(kind)} · 후보 ${Number(body?.result?.candidates) || 0}건`;
+          }
+          await refreshTimelines();
+        } catch (error) {
+          dom["timeline-refresh-error"].textContent = error.message || "타임라인을 다시 생성하지 못했습니다.";
+        } finally {
+          dom["timeline-refresh-button"].disabled = false;
+          dom["timeline-refresh-button"].textContent = "지금 타임라인 다시 생성";
+        }
+      });
+
+      dom["budget-form"].addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!token) return;
+        const limit = Number(dom["budget-limit-input"].value);
+        const share = Number(dom["budget-share-input"].value);
+        const runCount = Number(dom["budget-runs-input"].value);
+        if (!Number.isInteger(limit) || limit < 0 || limit > 1000 || !Number.isInteger(share) || share < 0 || share > 100 || !Number.isInteger(runCount) || runCount < 1 || runCount > 24) {
+          dom["budget-error"].textContent = "건수는 0~1000, 비율은 0~100, 회차는 1~24 정수여야 합니다.";
+          return;
+        }
+        let domains;
+        if (budgetDomainsAvailable) {
+          const coreLimit = Number(dom["budget-domain-core-limit"].value);
+          const cryptoLimit = Number(dom["budget-domain-crypto-limit"].value);
+          const cryptoDocumentLimit = Number(dom["budget-domain-crypto-document"].value);
+          if (![coreLimit, cryptoLimit, cryptoDocumentLimit].every(Number.isInteger) || coreLimit < 0 || cryptoLimit < 0 || cryptoDocumentLimit < 0 || coreLimit + cryptoLimit > limit || cryptoDocumentLimit > cryptoLimit) {
+            dom["budget-error"].textContent = "도메인 한도 합계는 전체 이하, 크립토 문서 한도는 크립토 전체 이하여야 합니다.";
+            return;
+          }
+          domains = [
+            { coverage_domain: "core", daily_map_limit: coreLimit, document_map_limit: 0 },
+            { coverage_domain: "crypto", daily_map_limit: cryptoLimit, document_map_limit: cryptoDocumentLimit }
+          ];
+        }
+        dom["budget-error"].textContent = "";
+        dom["budget-save"].disabled = true;
+        try {
+          const response = await fetch("/ops/api/map-budget", {
+            method: "PUT",
+            headers: { "X-API-Token": token, "Content-Type": "application/json" },
+            body: JSON.stringify({ daily_map_limit: limit, fresh_share_percent: share, daily_run_count: runCount, ...(domains ? { domains } : {}) })
+          });
+          if (!response.ok) throw new Error(`저장 실패 (${response.status})`);
+          renderBudget(await response.json());
+          dom["live-status"].textContent = "Map 예산을 저장했습니다.";
+        } catch (error) {
+          dom["budget-error"].textContent = error.message || "예산을 저장하지 못했습니다.";
+        } finally {
+          dom["budget-save"].disabled = false;
+        }
+      });
+
+      dom["refresh-button"].addEventListener("click", () => {
+        if (activeView === "system") refreshSnapshot();
+        else refreshAnalytics();
+      });
+      dom["limit-select"].addEventListener("change", refreshSnapshot);
+
+      document.querySelectorAll(".view-tab").forEach(tab => {
+        tab.addEventListener("click", () => activateView(tab.dataset.view || "overview"));
+        tab.addEventListener("keydown", event => {
+          const tabs = [...document.querySelectorAll(".view-tab")];
+          const current = tabs.indexOf(tab);
+          let next = current;
+          if (event.key === "ArrowRight") next = (current + 1) % tabs.length;
+          else if (event.key === "ArrowLeft") next = (current - 1 + tabs.length) % tabs.length;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = tabs.length - 1;
+          else return;
+          event.preventDefault();
+          activateView(tabs[next].dataset.view || "overview", true);
+        });
+      });
+
+      document.querySelectorAll("[data-days]").forEach(button => {
+        button.addEventListener("click", () => {
+          dailyDays = Number(button.dataset.days);
+          document.querySelectorAll("[data-days]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+          refreshAnalytics();
+        });
+      });
+
+      document.querySelectorAll("[data-months]").forEach(button => {
+        button.addEventListener("click", () => {
+          monthlyMonths = Number(button.dataset.months);
+          document.querySelectorAll("[data-months]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+          refreshAnalytics();
+        });
+      });
+
+      document.querySelectorAll("[data-activity-view]").forEach(button => {
+        button.addEventListener("click", () => {
+          activityView = button.dataset.activityView || "dau";
+          document.querySelectorAll("[data-activity-view]").forEach(item => item.setAttribute("aria-selected", String(item === button)));
+          renderActivityStage();
+        });
+      });
+
+      document.querySelectorAll("[data-content-ranking]").forEach(button => {
+        button.addEventListener("click", () => {
+          contentRankingMode = button.dataset.contentRanking || "popular";
+          popularPage = 0;
+          renderPopularArticles();
+        });
+      });
+
+      dom["popular-prev"].addEventListener("click", () => {
+        popularPage = Math.max(0, popularPage - 1);
+        renderPopularArticles();
+      });
+      dom["popular-next"].addEventListener("click", () => {
+        popularPage += 1;
+        renderPopularArticles();
+      });
+
+      document.querySelectorAll("[data-status]").forEach(button => {
+        if (!button.classList.contains("filter-tab")) return;
+        button.addEventListener("click", () => {
+          selectedStatus = button.dataset.status || "";
+          document.querySelectorAll(".filter-tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+          refreshSnapshot();
+        });
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          clearTimeout(timer);
+          clearTimeout(analyticsTimer);
+        } else if (token && activeView === "system") refreshSnapshot();
+        else if (token) refreshAnalytics();
+      });
+
+      if (token) {
+        showDashboard();
+        refreshAnalytics();
+        refreshSnapshot();
+      } else {
+        showGate();
+      }
+    })();
+  </script>
+</body>
+</html>

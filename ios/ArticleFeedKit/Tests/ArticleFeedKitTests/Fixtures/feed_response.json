@@ -1,0 +1,138 @@
+{
+  "format_version": 1,
+  "items": [
+    {
+      "article_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "source_url": "https://news.example/article",
+      "domain": "news.example",
+      "published_at": "2026-07-10T10:00:00Z",
+      "source_language": "Korean",
+      "source_country": "South Korea",
+      "status": "ok",
+      "map": {
+        "format_version": 3,
+        "language": "ko",
+        "headline": "도시의 여름을 바꾸는 새로운 그늘",
+        "subheadline": "작은 설계가 보행 경험을 바꾼다",
+        "summary": "도시는 폭염에 대응하기 위해 이동식 그늘을 설치했다. 시민들은 더 오래 걷고 머물 수 있게 됐다.",
+        "keywords": ["도시", "폭염", "공공디자인"],
+        "body_markdown": "첫 문단입니다. 도시는 가장 뜨거운 길부터 바꾸기 시작했습니다.\n\n<img:0>\n\n둘째 문단입니다. 시범 구간의 평균 체류 시간은 설치 전 8분, 설치 후 13분으로 기록됐습니다.\n\n<chart:0>\n\n<img:1>\n\n마지막 문단입니다. 작은 그늘은 사람들이 머무는 방식을 바꿨습니다.",
+        "body_resolved": "첫 문단입니다. 도시는 가장 뜨거운 길부터 바꾸기 시작했습니다.\n\n![거리 위에 설치된 이동식 그늘](http://127.0.0.1:8765/images/image-0)\n\n둘째 문단입니다. 시범 구간의 평균 체류 시간은 설치 전 8분, 설치 후 13분으로 기록됐습니다.\n\n<chart:0>\n\n![그늘 아래 쉬는 시민들](http://127.0.0.1:8765/images/image-1)\n\n마지막 문단입니다. 작은 그늘은 사람들이 머무는 방식을 바꿨습니다.",
+        "images": [
+          {
+            "ref": 0,
+            "image_id": "image-0",
+            "url": "http://127.0.0.1:8765/images/image-0",
+            "source_url": "https://origin.example/image-0.jpg",
+            "role": "social",
+            "caption": "거리 위에 설치된 이동식 그늘"
+          },
+          {
+            "ref": 1,
+            "image_id": "image-1",
+            "url": "http://127.0.0.1:8765/images/image-1",
+            "source_url": "https://origin.example/image-1.jpg",
+            "role": "content",
+            "caption": "그늘 아래 쉬는 시민들"
+          }
+        ],
+        "used_refs": [0, 1],
+        "visualizations": [
+          {
+            "ref": 0,
+            "kind": "bar",
+            "title": "그늘 설치 전후 평균 체류 시간",
+            "unit": "분",
+            "alt_text": "시범 구간의 평균 체류 시간은 설치 전 8분에서 설치 후 13분으로 늘었다.",
+            "series": [
+              {
+                "name": "평균 체류 시간",
+                "mark": "bar",
+                "points": [
+                  {
+                    "label": "설치 전",
+                    "value": 8,
+                    "raw_value": "8분",
+                    "evidence": "시범 구간의 평균 체류 시간은 설치 전 8분, 설치 후 13분으로 기록됐습니다."
+                  },
+                  {
+                    "label": "설치 후",
+                    "value": 13,
+                    "raw_value": "13분",
+                    "evidence": "시범 구간의 평균 체류 시간은 설치 전 8분, 설치 후 13분으로 기록됐습니다."
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "used_chart_refs": [0],
+        "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+        "required_claim_refs": ["CL-001", "CL-002"],
+        "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"],
+        "scenes": [
+          {
+            "id": "S-01",
+            "role": "lead",
+            "label": "시작",
+            "title": "가장 뜨거운 길부터 바꾼 도시",
+            "summary": "도시는 폭염에 대응하기 위해 이동식 그늘을 설치했다. 시민들은 더 오래 걷고 머물 수 있게 됐다.",
+            "body": "첫 문단입니다. 도시는 가장 뜨거운 길부터 바꾸기 시작했습니다.",
+            "secondary": "",
+            "quote": "",
+            "image_ref": null,
+            "chart_ref": null,
+            "claim_refs": ["CL-001"]
+          },
+          {
+            "id": "S-02",
+            "role": "evidence",
+            "label": "현장",
+            "title": "그늘 아래 길어진 체류 시간",
+            "summary": "",
+            "body": "둘째 문단입니다. 시범 구간의 평균 체류 시간은 설치 전 8분, 설치 후 13분으로 기록됐습니다.",
+            "secondary": "",
+            "quote": "",
+            "image_ref": 0,
+            "chart_ref": null,
+            "claim_refs": ["CL-002"]
+          },
+          {
+            "id": "S-03",
+            "role": "evidence",
+            "label": "수치",
+            "title": "그늘 설치 전후 평균 체류 시간",
+            "summary": "",
+            "body": "",
+            "secondary": "",
+            "quote": "",
+            "image_ref": null,
+            "chart_ref": 0,
+            "claim_refs": ["CL-003"]
+          },
+          {
+            "id": "S-04",
+            "role": "close",
+            "label": "의미",
+            "title": "시설보다 머물 수 있는 시간",
+            "summary": "",
+            "body": "마지막 문단입니다. 작은 그늘은 사람들이 머무는 방식을 바꿨습니다.",
+            "secondary": "",
+            "quote": "",
+            "image_ref": 1,
+            "chart_ref": null,
+            "claim_refs": ["CL-004"]
+          }
+        ],
+        "editorial": {
+          "mode": "editorial_completeness",
+          "pipeline_version": "editorial-v3.6",
+          "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "critic_verdict": "pass"
+        }
+      }
+    }
+  ],
+  "next_cursor": null,
+  "cooldown_seconds": 1.0
+}

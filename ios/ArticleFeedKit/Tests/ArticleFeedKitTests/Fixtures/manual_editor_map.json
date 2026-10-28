@@ -1,0 +1,82 @@
+{
+  "format_version": 3,
+  "language": "ko",
+  "headline": "골목의 여름을 다시 설계하다",
+  "subheadline": "운영진이 현장에서 기록한 심층 보도",
+  "summary": "그늘과 쉼터의 간격이 보행자의 선택을 바꿨다.",
+  "keywords": ["폭염", "보행", "도시설계"],
+  "body_markdown": "조사는 가장 뜨거운 시간대의 골목에서 시작됐다.\n\n<img:0>\n\n그늘과 쉼터가 끊기지 않을 때 보행자는 더 오래 길에 머물렀다.\n\n그 변화는 시설 하나가 아니라 이동 경로 전체에서 나타났다.\n\n> 머물 수 있어야 걸을 수 있습니다.\n\n시는 다음 조사에서 실제 체류와 이동 기록을 다시 비교한다.",
+  "body_resolved": "조사는 가장 뜨거운 시간대의 골목에서 시작됐다.\n\n![그늘이 이어진 보행 구간](https://news.example/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)\n\n그늘과 쉼터가 끊기지 않을 때 보행자는 더 오래 길에 머물렀다.\n\n그 변화는 시설 하나가 아니라 이동 경로 전체에서 나타났다.\n\n> 머물 수 있어야 걸을 수 있습니다.\n\n시는 다음 조사에서 실제 체류와 이동 기록을 다시 비교한다.",
+  "images": [
+    {
+      "ref": 0,
+      "image_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "url": "https://news.example/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source_url": "https://news.example/editorial/street.webp",
+      "role": "editorial",
+      "caption": "그늘이 이어진 보행 구간"
+    },
+    {
+      "ref": 1,
+      "image_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "url": "https://news.example/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "source_url": "https://news.example/editorial/cover.jpg",
+      "role": "editorial",
+      "caption": "기사 표지"
+    }
+  ],
+  "cover_image_ref": 1,
+  "used_refs": [0],
+  "visualizations": [],
+  "used_chart_refs": [],
+  "claim_ids": ["CL-001", "CL-002", "CL-003"],
+  "required_claim_refs": ["CL-001", "CL-002", "CL-003"],
+  "selected_claim_refs": ["CL-001", "CL-002", "CL-003"],
+  "scenes": [
+    {
+      "id": "S-01",
+      "role": "lead",
+      "label": "시작",
+      "title": "가장 더운 길에서 시작한 기록",
+      "summary": "운영진은 여름 골목의 온도와 사람들의 이동을 함께 기록했다.",
+      "body": "조사는 가장 뜨거운 시간대의 골목에서 시작됐다.",
+      "secondary": "",
+      "quote": "",
+      "image_ref": null,
+      "chart_ref": null,
+      "claim_refs": ["CL-001"]
+    },
+    {
+      "id": "S-02",
+      "role": "context",
+      "label": "현장",
+      "title": "시설의 수보다 중요한 간격",
+      "summary": "",
+      "body": "그늘과 쉼터가 끊기지 않을 때 보행자는 더 오래 길에 머물렀다.",
+      "secondary": "그 변화는 시설 하나가 아니라 이동 경로 전체에서 나타났다.",
+      "quote": "머물 수 있어야 걸을 수 있습니다.",
+      "image_ref": 0,
+      "chart_ref": null,
+      "claim_refs": ["CL-002"]
+    },
+    {
+      "id": "S-03",
+      "role": "close",
+      "label": "다음",
+      "title": "다음 여름의 기준을 남기다",
+      "summary": "",
+      "body": "시는 다음 조사에서 실제 체류와 이동 기록을 다시 비교한다.",
+      "secondary": "",
+      "quote": "",
+      "image_ref": null,
+      "chart_ref": null,
+      "claim_refs": ["CL-003"]
+    }
+  ],
+  "editorial": {
+    "mode": "editorial_completeness",
+    "pipeline_version": "manual-editor-v1",
+    "source_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "critic_verdict": "pass"
+  }
+}

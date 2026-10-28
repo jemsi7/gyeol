@@ -1,0 +1,21 @@
+fastapi==0.115.6
+python-multipart==0.0.20
+uvicorn[standard]==0.34.0
+httpx==0.28.1
+h2==4.2.0
+asyncpg==0.30.0
+apscheduler==3.11.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+PyYAML==6.0.2
+python-dotenv==1.0.1
+tenacity==9.0.0
+cbor2==6.1.3
+cryptography==49.0.0
+# article body extraction for the LLM mapping stage
+trafilatura==1.12.2
+# text layer of primary-source PDFs (regulatory filings, audit reports).
+# Text layer only: a scanned filing is a failed extraction, not an OCR job.
+pypdf==5.9.0
+# optional S3 image backend
+boto3==1.35.90

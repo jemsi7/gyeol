@@ -1,0 +1,287 @@
+{
+  "format_version": 1,
+  "generated_at": "2026-07-21T01:00:00Z",
+  "expires_at": "2026-07-22T13:00:00Z",
+  "representative_route_id": "00000000-0000-0000-0000-000000000001",
+  "routes": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "rank": 1,
+      "slug": "ai-infrastructure",
+      "title": "AI 인프라를 네 번에 이해하기",
+      "summary": "수요의 출발점부터 전력과 반도체 공급망, 지역사회의 반론까지 이어 읽는 경로입니다.",
+      "topic": "AI 인프라",
+      "is_representative": true,
+      "items": [
+        {
+          "position": 1,
+          "role": "start",
+          "reason": "산업 변화가 시작된 배경과 장기 수요를 먼저 이해할 수 있는 기사입니다.",
+          "lasting_value": "단기 발표가 아니라 컴퓨팅 수요의 구조적 변화를 설명하는 근거가 남습니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000001",
+            "source_url": "https://signal.example/ai-demand",
+            "domain": "signal.example",
+            "published_at": "2026-07-20T08:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "AI 수요는 어디에서 시작되는가",
+              "summary": "기업의 모델 운영 방식이 연산 수요를 어떻게 장기적으로 바꾸는지 살펴봅니다.",
+              "keywords": ["AI", "연산", "수요"],
+              "body_markdown": "기업이 실험을 넘어 상시 운영으로 이동하면서 연산 수요의 성격도 달라지고 있습니다.\n\n비용과 성능을 함께 관리하는 능력이 다음 투자의 기준이 됩니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        },
+        {
+          "position": 2,
+          "role": "context",
+          "reason": "데이터센터 확대가 전력망과 입지 정책으로 연결되는 맥락을 보여주는 기사입니다.",
+          "lasting_value": "설비 증설과 전력 계획의 시간 차이를 설명해 이후 정책 변화를 해석할 수 있습니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000002",
+            "source_url": "https://grid.example/datacenter-power",
+            "domain": "grid.example",
+            "published_at": "2026-07-19T09:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "데이터센터와 전력망의 시간표",
+              "summary": "서버는 빠르게 늘지만 송전망은 오래 걸리는 구조적 시차를 짚습니다.",
+              "keywords": ["데이터센터", "전력망", "입지"],
+              "body_markdown": "데이터센터 투자와 송전망 건설은 서로 다른 시간표로 움직입니다.\n\n입지 결정에는 전력 확보 가능성과 지역의 수용성이 함께 작용합니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        },
+        {
+          "position": 3,
+          "role": "evidence",
+          "reason": "공급망 병목을 수치와 생산 단계별 근거로 확인할 수 있는 분석 기사입니다.",
+          "lasting_value": "특정 기업의 하루 주가보다 반도체 공급 구조와 병목의 원인을 오래 참고할 수 있습니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000003",
+            "source_url": "https://chips.example/supply-chain",
+            "domain": "chips.example",
+            "published_at": "2026-07-18T07:30:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "AI 반도체 공급망의 병목 지도",
+              "summary": "첨단 패키징과 메모리, 장비가 서로 의존하는 공급 구조를 근거로 설명합니다.",
+              "keywords": ["반도체", "공급망", "패키징"],
+              "body_markdown": "AI 반도체는 설계만으로 완성되지 않고 여러 생산 단계의 동시 확장이 필요합니다.\n\n병목은 한 공정의 증설만으로 해소되지 않는다는 점이 핵심입니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        },
+        {
+          "position": 4,
+          "role": "counterpoint",
+          "reason": "성장 전망과 함께 비용·환경·지역사회 부담을 반대편에서 검토하는 기사입니다.",
+          "lasting_value": "투자의 편익과 외부 비용을 함께 비교할 수 있어 균형 잡힌 판단 근거가 됩니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000004",
+            "source_url": "https://civic.example/datacenter-costs",
+            "domain": "civic.example",
+            "published_at": "2026-07-17T12:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "데이터센터 성장의 비용을 묻다",
+              "summary": "전력과 물, 지역 편익을 둘러싼 쟁점을 성장 전망과 함께 비교합니다.",
+              "keywords": ["지역사회", "전력", "환경"],
+              "body_markdown": "대규모 시설은 투자와 일자리를 만들지만 지역 자원에 부담을 줄 수 있습니다.\n\n비용과 편익을 공개적으로 측정하는 기준이 필요한 이유입니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "rank": 2,
+      "slug": "climate-adaptation",
+      "title": "도시 기후 적응을 읽는 네 관점",
+      "summary": "폭염의 원인과 도시 설계, 검증된 대응 수단과 형평성 논쟁을 차례로 살펴보는 경로입니다.",
+      "topic": "도시 기후 적응",
+      "is_representative": false,
+      "items": [
+        {
+          "position": 1,
+          "role": "start",
+          "reason": "도시 폭염이 반복되는 구조적 원인을 가장 먼저 이해할 수 있는 기사입니다.",
+          "lasting_value": "한 번의 폭염 기록보다 열섬과 토지 이용의 관계를 계속 참고할 수 있습니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000005",
+            "source_url": "https://climate.example/urban-heat",
+            "domain": "climate.example",
+            "published_at": "2026-07-16T08:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "도시는 왜 밤에도 식지 않는가",
+              "summary": "열섬과 녹지, 건물 밀도가 야간 온도에 미치는 구조를 설명합니다.",
+              "keywords": ["폭염", "열섬", "도시"],
+              "body_markdown": "도시의 포장면과 건물은 낮에 받은 열을 밤까지 저장합니다.\n\n녹지와 바람길의 배치가 동네별 체감 온도 차이를 만듭니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        },
+        {
+          "position": 2,
+          "role": "context",
+          "reason": "그늘과 보행 환경이 건강과 이동권에 미치는 맥락을 연결하는 기사입니다.",
+          "lasting_value": "시설 하나가 아니라 보행 네트워크 전체를 평가하는 관점을 제공합니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000006",
+            "source_url": "https://city.example/shade-network",
+            "domain": "city.example",
+            "published_at": "2026-07-15T09:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "그늘을 시설이 아닌 이동망으로 설계하기",
+              "summary": "보행 경로의 연속성이 폭염 대응 효과를 좌우하는 이유를 살펴봅니다.",
+              "keywords": ["그늘", "보행", "공공디자인"],
+              "body_markdown": "한 지점의 그늘보다 생활권 전체에서 이어지는 쉼터가 중요합니다.\n\n노약자와 대중교통 이용자의 실제 이동 경로를 기준으로 설계해야 합니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        },
+        {
+          "position": 3,
+          "role": "evidence",
+          "reason": "여러 대응 수단의 효과와 한계를 비교한 근거 중심 분석 기사입니다.",
+          "lasting_value": "정책 유행과 무관하게 수단별 효과를 비교하는 평가 틀로 활용할 수 있습니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000007",
+            "source_url": "https://evidence.example/cooling-options",
+            "domain": "evidence.example",
+            "published_at": "2026-07-14T10:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "도시를 식히는 수단은 어디까지 검증됐나",
+              "summary": "나무와 차열 포장, 쉼터의 효과를 조건과 측정 한계까지 함께 비교합니다.",
+              "keywords": ["녹지", "차열", "근거"],
+              "body_markdown": "냉각 수단은 기후와 토지 조건에 따라 다른 효과를 냅니다.\n\n평균값만이 아니라 측정 기간과 유지 비용까지 비교해야 합니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        },
+        {
+          "position": 4,
+          "role": "counterpoint",
+          "reason": "기후 적응 투자가 누구에게 먼저 도달하는지 형평성 관점에서 검토하는 기사입니다.",
+          "lasting_value": "정책 총량과 실제 수혜 지역의 차이를 계속 점검할 수 있는 기준을 제공합니다.",
+          "article": {
+            "article_id": "0000000000000000000000000000000000000000000000000000000000000008",
+            "source_url": "https://equity.example/heat-investment",
+            "domain": "equity.example",
+            "published_at": "2026-07-13T11:00:00Z",
+            "source_language": "Korean",
+            "source_country": "South Korea",
+            "status": "ok",
+            "map": {
+              "format_version": 3,
+              "language": "ko",
+              "headline": "폭염 예산은 가장 더운 동네에 가는가",
+              "summary": "도시 평균이 가리는 동네별 위험과 투자 배분의 차이를 분석합니다.",
+              "keywords": ["형평성", "예산", "폭염"],
+              "body_markdown": "같은 도시 안에서도 소득과 주거 형태에 따라 폭염 위험은 달라집니다.\n\n투자 우선순위는 평균 온도가 아니라 취약성과 접근성을 함께 반영해야 합니다.",
+              "images": [],
+              "claim_ids": ["CL-001", "CL-002", "CL-003", "CL-004"],
+              "selected_claim_refs": ["CL-001", "CL-002", "CL-003", "CL-004"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "search_suggestions": ["AI 인프라", "전력과 데이터센터", "반도체 공급망", "도시 기후 적응"],
+  "query": "전력 인프라",
+  "results": [
+    {
+      "depth": "quick",
+      "article": {
+        "article_id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "source_url": "https://signal.example/ai-demand",
+        "domain": "signal.example",
+        "published_at": "2026-07-20T08:00:00Z",
+        "source_language": "Korean",
+        "source_country": "South Korea",
+        "status": "ok",
+        "map": {
+          "format_version": 3,
+          "language": "ko",
+          "headline": "AI 수요는 어디에서 시작되는가",
+          "summary": "기업의 모델 운영 방식이 연산 수요를 어떻게 장기적으로 바꾸는지 살펴봅니다.",
+          "keywords": ["AI", "연산", "수요"],
+          "body_markdown": "기업이 실험을 넘어 상시 운영으로 이동하면서 연산 수요의 성격도 달라지고 있습니다.\n\n비용과 성능을 함께 관리하는 능력이 다음 투자의 기준이 됩니다.",
+          "images": [],
+          "scenes": [{"id":"S-01"},{"id":"S-02"},{"id":"S-03"},{"id":"S-04"}]
+        }
+      }
+    },
+    {
+      "depth": "deep",
+      "article": {
+        "article_id": "0000000000000000000000000000000000000000000000000000000000000005",
+        "source_url": "https://climate.example/urban-heat",
+        "domain": "climate.example",
+        "published_at": "2026-07-16T08:00:00Z",
+        "source_language": "Korean",
+        "source_country": "South Korea",
+        "status": "ok",
+        "map": {
+          "format_version": 3,
+          "language": "ko",
+          "headline": "도시는 왜 밤에도 식지 않는가",
+          "summary": "열섬과 녹지, 건물 밀도가 야간 온도에 미치는 구조를 설명합니다.",
+          "keywords": ["폭염", "열섬", "도시"],
+          "body_markdown": "도시의 포장면과 건물은 낮에 받은 열을 밤까지 저장합니다.\n\n녹지와 바람길의 배치가 동네별 체감 온도 차이를 만듭니다.",
+          "images": [],
+          "scenes": [{"id":"S-01"},{"id":"S-02"},{"id":"S-03"},{"id":"S-04"},{"id":"S-05"},{"id":"S-06"}]
+        }
+      }
+    }
+  ],
+  "cooldown_seconds": 1.0
+}
